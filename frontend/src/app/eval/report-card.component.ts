@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
 import { DataService } from '../core/data.service';
 import { ReportCard } from '../core/models';
 
 @Component({
   selector: 'app-report-card',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatIconModule],
   templateUrl: './report-card.component.html',
   styleUrl: './report-card.component.scss',
 })

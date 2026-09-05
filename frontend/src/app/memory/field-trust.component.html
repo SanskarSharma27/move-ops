@@ -2,15 +2,20 @@
   <div
     class="field-row"
     *ngFor="let f of fields"
+    [ngClass]="f.verdict"
     [matTooltip]="f.evidence"
     matTooltipPosition="left"
+    tabindex="0"
   >
-    <div class="field-name" [class.strike]="f.verdict === 'quarantined'">
-      {{ f.table_name }}.{{ f.column_name }}
+    <div class="field-top">
+      <mat-icon class="verdict-icon" inline="true">{{ verdictIcon(f.verdict) }}</mat-icon>
+      <span class="field-name mono" [class.strike]="f.verdict === 'quarantined'">
+        {{ f.table_name }}.{{ f.column_name }}
+      </span>
+      <span class="trust-value mono">{{ f.trust | number: '1.2-2' }}</span>
     </div>
     <div class="trust-bar-track">
-      <div class="trust-bar-fill" [ngClass]="f.verdict" [style.width.%]="f.trust * 100"></div>
+      <div class="trust-bar-fill" [style.width.%]="f.trust * 100"></div>
     </div>
-    <div class="trust-value mono" [ngClass]="f.verdict">{{ f.trust | number: '1.0-2' }}</div>
   </div>
 </div>

@@ -18,11 +18,19 @@ import { CaseFile, PlaybookEntry } from '../core/models';
 export class MemoryPanelComponent implements OnInit, OnDestroy {
   cases: CaseFile[] = [];
   playbook: PlaybookEntry[] = [];
+  quarantinedNote = '';
   private destroy$ = new Subject<void>();
 
   constructor(private data: DataService, private store: ReplayStoreService) {}
 
   ngOnInit(): void {
+    this.data.fieldTrust()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((fields) => {
+        const quarantined = fields.filter((f) => f.verdict === 'quarantined').length;
+        this.quarantinedNote = quarantined ? `${quarantined} quarantined` : `${fields.length} audited`;
+      });
+
     combineLatest([this.data.cases(), this.data.playbook(), this.store.state$])
       .pipe(takeUntil(this.destroy$))
       .subscribe(([cases, playbook, state]) => {

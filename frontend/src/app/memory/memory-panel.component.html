@@ -1,42 +1,55 @@
 <div class="panel scroll-y">
   <section>
-    <h3>Field trust</h3>
+    <h3>
+      <mat-icon inline="true">fact_check</mat-icon>Field trust
+      <span class="h3-count mono">{{ quarantinedNote }}</span>
+    </h3>
     <app-field-trust></app-field-trust>
   </section>
 
   <section>
-    <h3>Cases</h3>
+    <h3>
+      <mat-icon inline="true">folder_open</mat-icon>Cases
+      <span class="h3-count mono">{{ cases.length }}</span>
+    </h3>
     <div class="empty" *ngIf="!cases.length">No open cases yet.</div>
+
     <mat-accordion multi="false">
       <mat-expansion-panel *ngFor="let c of cases; trackBy: trackByCaseId">
         <mat-expansion-panel-header>
-          <mat-panel-title>
-            <span class="case-entity">{{ c.entity_id }}</span>
-          </mat-panel-title>
+          <mat-panel-title>{{ c.entity_id }}</mat-panel-title>
           <mat-panel-description>
-            <span class="status-chip" [ngClass]="c.status">{{ c.status }}</span>
-            <span class="occurrences mono">×{{ c.occurrences }}</span>
+            <span class="chip status-chip" [ngClass]="c.status">{{ c.status }}</span>
+            <span class="occurrences mono">{{ c.occurrences }} occurrences</span>
           </mat-panel-description>
         </mat-expansion-panel-header>
 
         <p class="diagnosis">{{ c.diagnosis }}</p>
 
         <div class="prediction-record" *ngIf="c.prediction_record as pr">
-          <span class="mono">{{ pr.confirmed }} confirmed</span>
-          <span class="mono">·</span>
-          <span class="mono">{{ pr.refuted }} refuted</span>
-          <span class="mono">·</span>
-          <span class="mono">{{ pr.pending }} pending</span>
+          <span class="record-pill confirmed">
+            <mat-icon inline="true">check</mat-icon>{{ pr.confirmed }} confirmed
+          </span>
+          <span class="record-pill refuted">
+            <mat-icon inline="true">close</mat-icon>{{ pr.refuted }} refuted
+          </span>
+          <span class="record-pill pending">
+            <mat-icon inline="true">schedule</mat-icon>{{ pr.pending }} pending
+          </span>
         </div>
 
         <ul class="predictions">
-          <li *ngFor="let p of c.predictions">
-            <mat-icon
-              class="outcome-icon"
-              [ngClass]="p.outcome ?? 'pending'"
-              inline="true"
-            >{{ p.outcome === 'confirmed' ? 'check' : p.outcome === 'refuted' ? 'close' : 'schedule' }}</mat-icon>
-            <span class="prediction-text">{{ p.statement }}</span>
+          <li *ngFor="let p of c.predictions" [ngClass]="p.outcome ?? 'pending'">
+            <mat-icon class="outcome-icon" inline="true">
+              {{ p.outcome === 'confirmed' ? 'check_circle' : p.outcome === 'refuted' ? 'cancel' : 'schedule' }}
+            </mat-icon>
+            <span class="prediction-body">
+              <span class="prediction-text">{{ p.statement }}</span>
+              <span class="prediction-meta mono">
+                made {{ p.made_on }}
+                <ng-container *ngIf="p.observed !== null"> · observed {{ p.observed }}</ng-container>
+              </span>
+            </span>
           </li>
         </ul>
       </mat-expansion-panel>
@@ -44,12 +57,19 @@
   </section>
 
   <section>
-    <h3>Playbook</h3>
-    <div class="empty" *ngIf="!playbook.length">Empty so far — entries appear as cases confirm predictions.</div>
+    <h3>
+      <mat-icon inline="true">menu_book</mat-icon>Playbook
+      <span class="h3-count mono">{{ playbook.length }}</span>
+    </h3>
+    <div class="empty" *ngIf="!playbook.length">
+      Empty so far — entries are earned when a case's predictions hold up.
+    </div>
     <div class="playbook-entry card-in" *ngFor="let p of playbook">
       <div class="playbook-action">{{ p.action }}</div>
       <div class="playbook-meta mono">
-        confidence {{ p.confidence | number: '1.0-2' }} · cases {{ p.evidence.case_ids.join(', ') }}
+        <span class="confidence-dot" aria-hidden="true"></span>
+        confidence {{ p.confidence | number: '1.0-2' }} · {{ p.n_confirmed }}/{{ p.n_cases }} confirmed ·
+        {{ p.evidence.case_ids.join(', ') }}
       </div>
     </div>
   </section>

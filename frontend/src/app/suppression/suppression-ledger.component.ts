@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatIconModule } from '@angular/material/icon';
 import { Subject, combineLatest, takeUntil } from 'rxjs';
 import { DataService } from '../core/data.service';
 import { ReplayStoreService } from '../core/replay-store.service';
@@ -11,6 +12,14 @@ interface ReasonGroup {
   label: string;
   count: number;
   rows: Suppression[];
+}
+
+interface FunnelStage {
+  label: string;
+  value: number;
+  today: number;
+  share: number;
+  tone: string;
 }
 
 const REASON_LABELS: Record<ReasonCode, string> = {
@@ -32,7 +41,7 @@ const REASON_ORDER: ReasonCode[] = [
 @Component({
   selector: 'app-suppression-ledger',
   standalone: true,
-  imports: [CommonModule, MatExpansionModule],
+  imports: [CommonModule, MatExpansionModule, MatIconModule],
   templateUrl: './suppression-ledger.component.html',
   styleUrl: './suppression-ledger.component.scss',
 })
@@ -65,6 +74,28 @@ export class SuppressionLedgerComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  /** Bars are sized against raw signals so the drop-off is visible, not just stated. */
+  stages(s: DailySummary): FunnelStage[] {
+    const raw = s.window.raw_signals || 1;
+    return [
+      { label: 'raw signals', value: s.window.raw_signals, today: s.raw_signals, share: 100, tone: 'raw' },
+      {
+        label: 'suppressed',
+        value: s.window.suppressed,
+        today: s.suppressed,
+        share: (s.window.suppressed / raw) * 100,
+        tone: 'suppressed',
+      },
+      {
+        label: 'incidents',
+        value: s.window.incidents,
+        today: s.incidents,
+        share: (s.window.incidents / raw) * 100,
+        tone: 'incidents',
+      },
+    ];
   }
 
   trackByReason(_index: number, group: ReasonGroup): ReasonCode {

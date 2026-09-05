@@ -1,53 +1,84 @@
 .panel {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: var(--space-5);
   height: 100%;
-  padding-right: 2px;
+  padding-right: var(--space-1);
 }
 
 h3 {
-  font-size: 11px;
-  letter-spacing: 0.08em;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--text-muted);
-  margin: 0 0 8px;
+  color: var(--text-dim);
+  margin: 0 0 var(--space-2);
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    color: var(--accent);
+  }
 }
 
-.case-entity {
-  font-size: 12px;
+.h3-count {
+  margin-left: auto;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text-muted);
 }
+
+/* ---- cases ---- */
 
 .status-chip {
-  font-size: 9px;
-  text-transform: uppercase;
-  padding: 1px 6px;
-  border-radius: 4px;
-  margin-right: 8px;
+  margin-right: var(--space-2);
 
-  &.open { background: rgba(148, 163, 184, 0.2); color: var(--text-muted); }
-  &.recurring { background: rgba(245, 158, 11, 0.2); color: var(--severity-medium); }
-  &.structural { background: rgba(239, 68, 68, 0.2); color: var(--severity-critical); }
-  &.resolved { background: rgba(34, 197, 94, 0.2); color: var(--positive); }
+  &.open { background: rgba(159, 176, 201, 0.18); color: var(--text-muted); }
+  &.recurring { background: rgba(251, 191, 36, 0.18); color: var(--severity-medium); }
+  &.structural { background: rgba(255, 92, 92, 0.18); color: var(--severity-critical); }
+  &.resolved { background: rgba(52, 211, 153, 0.18); color: var(--positive); }
 }
 
 .occurrences {
-  color: var(--text-muted);
-  font-size: 11px;
+  color: var(--text-dim);
+  font-size: var(--fs-micro);
 }
 
 .diagnosis {
-  font-size: 12px;
-  line-height: 1.5;
-  margin: 0 0 8px;
+  font-size: var(--fs-small);
+  line-height: 1.6;
+  margin: 0 0 var(--space-3);
+  color: var(--text-muted);
 }
 
 .prediction-record {
   display: flex;
-  gap: 6px;
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-bottom: var(--space-3);
+}
+
+.record-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: var(--fs-micro);
+  font-family: var(--font-mono);
+
+  mat-icon {
+    font-size: 12px;
+    width: 12px;
+    height: 12px;
+  }
+
+  &.confirmed { background: rgba(52, 211, 153, 0.16); color: var(--positive); }
+  &.refuted { background: rgba(255, 92, 92, 0.16); color: var(--severity-critical); }
+  &.pending { background: rgba(159, 176, 201, 0.16); color: var(--text-muted); }
 }
 
 .predictions {
@@ -56,52 +87,82 @@ h3 {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-}
+  gap: var(--space-2);
 
-.predictions li {
-  display: flex;
-  gap: 6px;
-  align-items: flex-start;
-  font-size: 11px;
+  li {
+    display: flex;
+    gap: var(--space-2);
+    align-items: flex-start;
+  }
 }
 
 .outcome-icon {
   font-size: 14px;
-  height: 14px;
   width: 14px;
+  height: 14px;
   flex: none;
   margin-top: 1px;
 
-  &.confirmed { color: var(--positive); }
-  &.refuted { color: var(--severity-critical); }
-  &.pending { color: var(--text-muted); }
+  .confirmed & { color: var(--positive); }
+  .refuted & { color: var(--severity-critical); }
+  .pending & { color: var(--text-dim); }
+}
+
+.prediction-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
 }
 
 .prediction-text {
+  font-size: var(--fs-micro);
   color: var(--text-muted);
+  line-height: 1.5;
 }
 
+.prediction-meta {
+  font-size: var(--fs-micro);
+  color: var(--text-dim);
+}
+
+/* ---- playbook ---- */
+
 .playbook-entry {
-  padding: 8px 10px;
-  background: var(--surface);
+  padding: var(--space-2) var(--space-3);
+  background: var(--surface-raised);
   border: 1px solid var(--border);
   border-left: 3px solid var(--positive);
-  border-radius: var(--radius);
-  margin-bottom: 8px;
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--space-2);
 }
 
 .playbook-action {
-  font-size: 12px;
-  margin-bottom: 4px;
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  margin-bottom: var(--space-1);
 }
 
 .playbook-meta {
-  font-size: 10px;
-  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--fs-micro);
+  color: var(--text-dim);
+}
+
+.confidence-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--positive);
+  flex: none;
 }
 
 .empty {
-  color: var(--text-muted);
-  font-size: 12px;
+  color: var(--text-dim);
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  padding: var(--space-2);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
 }

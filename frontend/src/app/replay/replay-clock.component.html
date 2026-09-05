@@ -1,63 +1,97 @@
 <ng-container *ngIf="state$ | async as state">
   <div class="clock-header">
-    <div class="clock-label">REPLAY</div>
-    <div class="clock-date mono">{{ formatDay(state.current_day) }}</div>
+    <div class="clock-eyebrow">Business date</div>
+    <div class="clock-date mono">
+      <span class="day">{{ dayOfMonth(state.current_day) }}</span>
+      <span class="month">Jul<br />2026</span>
+    </div>
+    <div class="clock-weekday">{{ weekday(state.current_day) }}</div>
   </div>
 
-  <mat-progress-bar mode="determinate" [value]="(progress$ | async) ?? 0"></mat-progress-bar>
-  <div class="range-labels mono">
-    <span>1 Jul</span>
-    <span>31 Jul</span>
+  <div class="progress">
+    <div class="progress-track">
+      <div class="progress-fill" [style.width.%]="(progress$ | async) ?? 0"></div>
+      <div class="progress-head" [style.left.%]="(progress$ | async) ?? 0"></div>
+    </div>
+    <div class="range-labels mono">
+      <span>1 Jul</span>
+      <span>day {{ state.days_done + 1 }} / 31</span>
+      <span>31 Jul</span>
+    </div>
   </div>
 
   <div class="transport">
-    <button mat-icon-button matTooltip="Back one day" (click)="step(-1)" [disabled]="state.current_day === state.first_day">
+    <button
+      mat-icon-button
+      matTooltip="Back one day (←)"
+      aria-label="Back one day"
+      (click)="step(-1)"
+      [disabled]="state.current_day === state.first_day"
+    >
       <mat-icon>skip_previous</mat-icon>
     </button>
-    <button mat-fab color="primary" (click)="toggle(state)" [attr.aria-label]="state.status === 'playing' ? 'Pause' : 'Play'">
+    <button
+      mat-fab
+      color="primary"
+      class="play-button"
+      (click)="toggle(state)"
+      [attr.aria-label]="state.status === 'playing' ? 'Pause replay' : 'Play replay'"
+      [matTooltip]="state.status === 'playing' ? 'Pause (space)' : 'Play (space)'"
+    >
       <mat-icon>{{ state.status === 'playing' ? 'pause' : 'play_arrow' }}</mat-icon>
     </button>
-    <button mat-icon-button matTooltip="Forward one day" (click)="step(1)" [disabled]="state.current_day === state.last_day">
+    <button
+      mat-icon-button
+      matTooltip="Forward one day (→)"
+      aria-label="Forward one day"
+      (click)="step(1)"
+      [disabled]="state.current_day === state.last_day"
+    >
       <mat-icon>skip_next</mat-icon>
     </button>
-    <button mat-icon-button matTooltip="Reset to 1 Jul" (click)="reset()">
+    <button mat-icon-button matTooltip="Reset to 1 Jul" aria-label="Reset to 1 July" (click)="reset()">
       <mat-icon>restart_alt</mat-icon>
     </button>
   </div>
 
   <div class="presets">
-    <div class="presets-label">JUMP TO</div>
+    <div class="section-label">Jump to</div>
     <button
-      mat-stroked-button
+      class="preset"
       *ngFor="let p of presets"
-      [matTooltip]="p.hint"
       [class.active]="state.current_day === p.day"
       (click)="seek(p.day)"
     >
-      {{ p.label }}
+      <span class="preset-day mono">{{ p.label }}</span>
+      <span class="preset-hint">{{ p.hint }}</span>
     </button>
   </div>
 
   <div class="counters">
+    <div class="section-label">Running totals</div>
+
     <div class="counter">
-      <div class="counter-value mono">{{ state.days_done }}</div>
-      <div class="counter-label">days elapsed</div>
+      <span class="counter-label">Trips processed</span>
+      <span class="counter-value mono">{{ state.trips_seen | number }}</span>
     </div>
     <div class="counter">
-      <div class="counter-value mono">{{ state.trips_seen | number }}</div>
-      <div class="counter-label">trips processed</div>
-    </div>
-    <div class="counter">
-      <div class="counter-value mono">{{ state.signals_raised }}</div>
-      <div class="counter-label">signals raised</div>
+      <span class="counter-label">Signals raised</span>
+      <span class="counter-value mono">{{ state.signals_raised }}</span>
     </div>
     <div class="counter suppressed">
-      <div class="counter-value mono">{{ state.suppressed }}</div>
-      <div class="counter-label">suppressed</div>
+      <span class="counter-label">Suppressed</span>
+      <span class="counter-value mono">{{ state.suppressed }}</span>
     </div>
-    <div class="counter">
-      <div class="counter-value mono">{{ state.incidents_open }}</div>
-      <div class="counter-label">incidents open</div>
+    <div class="counter incidents">
+      <span class="counter-label">Incidents open</span>
+      <span class="counter-value mono">{{ state.incidents_open }}</span>
+    </div>
+
+    <div class="rate" *ngIf="state.signals_raised">
+      <div class="rate-bar">
+        <div class="rate-fill" [style.width.%]="suppressionRate(state)"></div>
+      </div>
+      <div class="rate-caption mono">{{ suppressionRate(state) }}% explained away</div>
     </div>
   </div>
 </ng-container>

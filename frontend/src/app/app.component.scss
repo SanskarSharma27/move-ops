@@ -5,49 +5,137 @@
 
 .shell {
   display: grid;
-  grid-template-columns: 260px 1fr 320px;
+  grid-template-columns: 268px 1fr 330px;
   grid-template-rows: auto 1fr auto;
   grid-template-areas:
     'top top top'
     'left center right'
     'foot foot foot';
   height: 100vh;
-  gap: 10px;
-  padding: 10px;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
 }
+
+/* ---- topbar ---- */
 
 .topbar {
   grid-area: top;
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: 0 var(--space-1) var(--space-1);
+}
+
+.brand-group {
+  display: flex;
   align-items: baseline;
-  gap: 12px;
-  padding: 2px 4px;
+  gap: var(--space-2);
+}
+
+.brand-mark {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--accent);
+  box-shadow: 0 0 12px var(--accent);
+  align-self: center;
 }
 
 .brand {
-  font-size: 18px;
+  margin: 0;
+  font-size: var(--fs-title);
   font-weight: 700;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
 }
 
 .brand-sub {
-  font-size: 12px;
+  font-size: var(--fs-small);
+  color: var(--text-dim);
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: var(--fs-micro);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+
+  &.live {
+    border-color: rgba(52, 211, 153, 0.5);
+    color: var(--positive);
+  }
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-dim);
+
+  .live & {
+    background: var(--positive);
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+.window {
+  font-size: var(--fs-small);
   color: var(--text-muted);
 }
 
+.shortcut-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--fs-micro);
+  color: var(--text-dim);
+  cursor: help;
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+}
+
+/* ---- rails ---- */
+
 .rail-left {
   grid-area: left;
-  padding: 12px;
-  overflow: hidden;
+  padding: var(--space-4);
+  // Tuned to fit 720px without scrolling; the overflow is a safety net for
+  // shorter viewports so no control is ever unreachable.
+  overflow-y: auto;
+  overflow-x: hidden;
   min-height: 0;
 }
 
 .rail-right {
   grid-area: right;
-  padding: 12px;
+  padding: var(--space-4);
   overflow: hidden;
   min-height: 0;
 }
+
+/* ---- center ---- */
 
 .center {
   grid-area: center;
@@ -55,6 +143,7 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
+  padding: 0 var(--space-4) var(--space-3);
 
   ::ng-deep .mat-mdc-tab-body-wrapper {
     flex: 1;
@@ -66,13 +155,54 @@
     display: flex;
     flex-direction: column;
   }
+
+  ::ng-deep .mat-mdc-tab-header {
+    border-bottom: 1px solid var(--border);
+  }
+
+  // Material's default inactive tab label is too dim to read across a room.
+  ::ng-deep .mat-mdc-tab .mdc-tab__text-label {
+    color: var(--text-muted);
+    font-size: var(--fs-body);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+
+  ::ng-deep .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
+    color: var(--text);
+  }
+}
+
+.tab-label {
+  margin-right: var(--space-2);
+}
+
+.tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+
+  &.suppressed {
+    color: var(--severity-medium);
+    border-color: rgba(251, 191, 36, 0.4);
+  }
 }
 
 .tab-body {
   height: 100%;
   display: flex;
   flex-direction: column;
-  padding-top: 10px;
+  padding-top: var(--space-3);
   min-height: 0;
 }
 
@@ -81,7 +211,9 @@
   min-height: 0;
 }
 
+/* ---- footer ---- */
+
 .footer {
   grid-area: foot;
-  height: 64px;
+  min-height: 62px;
 }

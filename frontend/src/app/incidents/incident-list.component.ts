@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import { MatListModule } from '@angular/material/list';
 import { Subject, combineLatest, takeUntil } from 'rxjs';
 import { DataService } from '../core/data.service';
 import { ReplayStoreService } from '../core/replay-store.service';
@@ -10,7 +9,7 @@ import { Incident } from '../core/models';
 @Component({
   selector: 'app-incident-list',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatListModule],
+  imports: [CommonModule, MatIconModule],
   templateUrl: './incident-list.component.html',
   styleUrl: './incident-list.component.scss',
 })
@@ -44,5 +43,13 @@ export class IncidentListComponent implements OnInit, OnDestroy {
 
   pick(id: string): void {
     this.select.emit(id);
+  }
+
+  jumpTo(day: string): void {
+    this.store.seek(day);
+  }
+
+  trackByIncidentId(_index: number, inc: Incident): string {
+    return inc.incident_id;
   }
 }

@@ -1,16 +1,37 @@
-<div class="shell">
+<div class="shell" *ngIf="state$ | async as state">
   <header class="topbar">
-    <span class="brand">MoveOps</span>
-    <span class="brand-sub mono">fleet reasoning agent — July 2026 replay</span>
+    <div class="brand-group">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <h1 class="brand">MoveOps</h1>
+      <span class="brand-sub">fleet reasoning agent</span>
+    </div>
+
+    <div class="topbar-right">
+      <span class="status-pill" [class.live]="state.status === 'playing'">
+        <span class="status-dot" aria-hidden="true"></span>
+        {{ state.status === 'playing' ? 'Replaying' : 'Paused' }}
+      </span>
+      <span class="window mono">1–31 July 2026</span>
+      <span
+        class="shortcut-hint mono"
+        matTooltip="Space plays or pauses · arrow keys step one day"
+      >
+        <mat-icon inline="true">keyboard</mat-icon> space / ← →
+      </span>
+    </div>
   </header>
 
   <aside class="rail-left card">
     <app-replay-clock></app-replay-clock>
   </aside>
 
-  <main class="center">
-    <mat-tab-group animationDuration="0ms">
-      <mat-tab label="Incidents">
+  <main class="center card">
+    <mat-tab-group animationDuration="150ms">
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span class="tab-label">Incidents</span>
+          <span class="tab-badge">{{ state.incidents_open }}</span>
+        </ng-template>
         <div class="tab-body">
           <app-incident-list
             [selectedId]="selectedIncidentId"
@@ -21,7 +42,12 @@
           </div>
         </div>
       </mat-tab>
-      <mat-tab label="Suppression Ledger">
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span class="tab-label">Suppression ledger</span>
+          <span class="tab-badge suppressed">{{ state.suppressed }}</span>
+        </ng-template>
         <div class="tab-body">
           <app-suppression-ledger></app-suppression-ledger>
         </div>

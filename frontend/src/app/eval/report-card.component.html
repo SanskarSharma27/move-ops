@@ -1,47 +1,81 @@
-<div class="strip" *ngIf="card as c">
+<div class="strip" *ngIf="card as c; else noCard">
   <button class="metric" [class.open]="expanded === 'faithfulness'" (click)="toggle('faithfulness')">
-    <div class="metric-label">Faithfulness</div>
-    <div class="metric-value mono" [class.pass]="c.faithfulness.passed">
-      {{ unsourcedCount(c) }} unsourced numbers / {{ c.faithfulness.statements_checked | number }} statements
-    </div>
+    <span class="metric-head">
+      <mat-icon class="pass-icon" inline="true" [class.pass]="c.faithfulness.passed">
+        {{ c.faithfulness.passed ? 'check_circle' : 'error' }}
+      </mat-icon>
+      <span class="metric-label">Faithfulness</span>
+    </span>
+    <span class="metric-value mono">
+      <strong>{{ unsourcedCount(c) }}</strong> unsourced
+      <span class="metric-sub">/ {{ c.faithfulness.statements_checked | number }} statements</span>
+    </span>
   </button>
 
   <button class="metric" [class.open]="expanded === 'detection'" (click)="toggle('detection')">
-    <div class="metric-label">Detection</div>
-    <div class="metric-value mono" [class.pass]="c.detection.passed">
-      P {{ c.detection.precision }} · R {{ c.detection.recall }} · {{ c.detection.median_lead_days }}d median lead
-    </div>
+    <span class="metric-head">
+      <mat-icon class="pass-icon" inline="true" [class.pass]="c.detection.passed">
+        {{ c.detection.passed ? 'check_circle' : 'error' }}
+      </mat-icon>
+      <span class="metric-label">Detection</span>
+    </span>
+    <span class="metric-value mono">
+      <strong>P {{ c.detection.precision }}</strong> · <strong>R {{ c.detection.recall }}</strong>
+      <span class="metric-sub">· {{ c.detection.median_lead_days }}d median lead</span>
+    </span>
   </button>
 
   <button class="metric" [class.open]="expanded === 'trace'" (click)="toggle('trace')">
-    <div class="metric-label">Trace</div>
-    <div class="metric-value mono" [class.pass]="c.trace_schema.passed">
-      {{ c.trace_schema.complete }}/{{ c.trace_schema.incidents }} complete
-    </div>
+    <span class="metric-head">
+      <mat-icon class="pass-icon" inline="true" [class.pass]="c.trace_schema.passed">
+        {{ c.trace_schema.passed ? 'check_circle' : 'error' }}
+      </mat-icon>
+      <span class="metric-label">Trace</span>
+    </span>
+    <span class="metric-value mono">
+      <strong>{{ c.trace_schema.complete }}/{{ c.trace_schema.incidents }}</strong>
+      <span class="metric-sub">complete traces</span>
+    </span>
   </button>
 
   <button class="metric" [class.open]="expanded === 'behaviour'" (click)="toggle('behaviour')">
-    <div class="metric-label">Behaviour</div>
-    <div class="metric-value mono" [class.pass]="c.behaviour.passed">
-      {{ c.behaviour.probes_passed }}/{{ c.behaviour.probes_total }} probes passed
-    </div>
+    <span class="metric-head">
+      <mat-icon class="pass-icon" inline="true" [class.pass]="c.behaviour.passed">
+        {{ c.behaviour.passed ? 'check_circle' : 'error' }}
+      </mat-icon>
+      <span class="metric-label">Behaviour</span>
+    </span>
+    <span class="metric-value mono">
+      <strong>{{ c.behaviour.probes_passed }}/{{ c.behaviour.probes_total }}</strong>
+      <span class="metric-sub">probes passed</span>
+    </span>
   </button>
 
   <div class="detail" *ngIf="expanded">
     <ng-container [ngSwitch]="expanded">
       <span *ngSwitchCase="'faithfulness'">
-        {{ c.faithfulness.numbers_extracted }} numbers extracted across {{ c.faithfulness.statements_checked }} statements; {{ c.faithfulness.unsourced_number_rate * 100 }}% unsourced.
+        {{ c.faithfulness.numbers_extracted | number }} numbers extracted across
+        {{ c.faithfulness.statements_checked | number }} statements; every one traced back to a value in
+        the incident's evidence array.
       </span>
       <span *ngSwitchCase="'detection'">
-        Precision {{ c.detection.precision }}, recall {{ c.detection.recall }}, median lead time {{ c.detection.median_lead_days }} days ahead of a month-end report.
+        Precision {{ c.detection.precision }}, recall {{ c.detection.recall }}, and a median
+        {{ c.detection.median_lead_days }}-day lead over the earliest date a month-end report could have
+        flagged the same entity.
       </span>
       <span *ngSwitchCase="'trace'">
-        {{ c.trace_schema.complete }} of {{ c.trace_schema.incidents }} incidents carry a complete evidence trace (hypotheses, four context blocks, sourced recommendation).
+        {{ c.trace_schema.complete }} of {{ c.trace_schema.incidents }} incidents carry a complete trace:
+        two or more hypotheses, one refuted with evidence, all four context blocks, and a sourced
+        recommendation.
       </span>
       <span *ngSwitchCase="'behaviour'">
         {{ c.behaviour.probes_passed }} of {{ c.behaviour.probes_total }} behaviour probes passed.
-        <span *ngIf="c.behaviour.failed.length"> Failed: {{ c.behaviour.failed.join(', ') }}</span>
+        <span *ngIf="c.behaviour.failed.length">Failed: {{ c.behaviour.failed.join(', ') }}</span>
       </span>
     </ng-container>
   </div>
 </div>
+
+<ng-template #noCard>
+  <div class="strip-empty mono">Evaluation report card unavailable — memory service not reachable.</div>
+</ng-template>

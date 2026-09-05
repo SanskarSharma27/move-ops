@@ -1,41 +1,44 @@
 .strip {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 0;
+  align-items: stretch;
   height: 100%;
-  padding: 0 12px;
+  padding: 0 var(--space-2);
 }
 
 .metric {
   all: unset;
   cursor: pointer;
   flex: 1;
-  min-width: 200px;
+  min-width: 210px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: 8px 16px;
+  justify-content: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-4);
   border-right: 1px solid var(--border);
+  transition: background 150ms ease;
 
   &:last-of-type {
     border-right: none;
   }
 
-  &:hover, &.open {
+  &:hover,
+  &.open {
     background: var(--surface-raised);
   }
 }
 
-.metric-label {
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-muted);
+.metric-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
 }
 
-.metric-value {
+.pass-icon {
   font-size: 13px;
+  width: 13px;
+  height: 13px;
   color: var(--severity-medium);
 
   &.pass {
@@ -43,10 +46,46 @@
   }
 }
 
+.metric-label {
+  font-size: var(--fs-micro);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.metric-value {
+  font-size: var(--fs-body);
+  color: var(--text-muted);
+
+  strong {
+    color: var(--text);
+    font-size: var(--fs-lead);
+    font-weight: 700;
+  }
+}
+
+// Angular strips whitespace-only text nodes between elements, so the gap
+// after each <strong> has to come from CSS rather than the template.
+.metric-sub {
+  margin-left: 5px;
+  color: var(--text-dim);
+  font-size: var(--fs-micro);
+}
+
 .detail {
   flex-basis: 100%;
-  padding: 8px 16px 4px;
-  font-size: 12px;
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--fs-small);
   color: var(--text-muted);
   border-top: 1px solid var(--border);
+  line-height: 1.55;
+}
+
+.strip-empty {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 var(--space-4);
+  font-size: var(--fs-small);
+  color: var(--text-dim);
 }

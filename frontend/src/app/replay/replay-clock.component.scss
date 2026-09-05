@@ -1,72 +1,168 @@
+// Everything here has to fit a 720px projector without scrolling, so the
+// vertical rhythm is deliberately tight.
 :host {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--space-3);
   height: 100%;
 }
 
-.clock-header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
+.section-label {
+  font-size: var(--fs-micro);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: var(--space-2);
 }
 
-.clock-label {
-  font-size: 11px;
+/* ---- date ---- */
+
+.clock-header {
+  text-align: center;
+}
+
+.clock-eyebrow {
+  font-size: var(--fs-micro);
   letter-spacing: 0.12em;
-  color: var(--text-muted);
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: var(--space-1);
 }
 
 .clock-date {
-  font-size: 18px;
-  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+
+  .day {
+    font-size: 38px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .month {
+    font-size: var(--fs-small);
+    line-height: 1.15;
+    color: var(--text-muted);
+    text-align: left;
+  }
+}
+
+.clock-weekday {
+  font-size: var(--fs-small);
+  color: var(--accent);
+  margin-top: var(--space-1);
+  letter-spacing: 0.04em;
+}
+
+/* ---- progress ---- */
+
+.progress-track {
+  position: relative;
+  height: 6px;
+  background: var(--surface-hover);
+  border-radius: 999px;
+  overflow: visible;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(56, 189, 248, 0.5), var(--accent));
+  transition: width 300ms ease;
+}
+
+.progress-head {
+  position: absolute;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  margin-left: -5px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+  transform: translateY(-50%);
+  transition: left 300ms ease;
 }
 
 .range-labels {
   display: flex;
   justify-content: space-between;
-  font-size: 10px;
-  color: var(--text-muted);
+  font-size: var(--fs-micro);
+  color: var(--text-dim);
+  margin-top: var(--space-2);
 }
+
+/* ---- transport ---- */
 
 .transport {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: var(--space-1);
 }
+
+.play-button {
+  --mdc-fab-container-color: var(--accent);
+  --mat-fab-foreground-color: #04121c;
+  box-shadow: 0 4px 16px rgba(56, 189, 248, 0.35) !important;
+}
+
+/* ---- presets ---- */
 
 .presets {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-1);
 
-.presets-label {
-  font-size: 11px;
-  letter-spacing: 0.1em;
-  color: var(--text-muted);
-  margin-top: 4px;
-}
-
-.presets button {
-  width: 100%;
-  justify-content: flex-start;
-  font-family: var(--font-mono);
-  font-size: 12px;
-
-  &.active {
-    border-color: var(--positive);
-    color: var(--positive);
+  .section-label {
+    grid-column: 1 / -1;
   }
 }
 
-.counters {
+.preset {
+  all: unset;
+  cursor: pointer;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 1px;
+  padding: var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  transition: background 150ms ease, border-color 150ms ease;
+
+  &:hover {
+    background: var(--surface-hover);
+    border-color: var(--border-strong);
+  }
+
+  &.active {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+  }
+}
+
+.preset-day {
+  font-size: var(--fs-small);
+  font-weight: 600;
+
+  .preset.active & {
+    color: var(--accent);
+  }
+}
+
+.preset-hint {
+  font-size: var(--fs-micro);
+  color: var(--text-dim);
+  line-height: 1.3;
+}
+
+/* ---- counters ---- */
+
+.counters {
   margin-top: auto;
-  padding-top: 12px;
+  padding-top: var(--space-3);
   border-top: 1px solid var(--border);
 }
 
@@ -74,20 +170,48 @@
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-}
-
-.counter-value {
-  font-size: 20px;
-  font-weight: 600;
+  padding: 2px 0;
 }
 
 .counter-label {
-  font-size: 11px;
+  font-size: var(--fs-small);
   color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+}
+
+.counter-value {
+  font-size: var(--fs-lead);
+  font-weight: 600;
 }
 
 .counter.suppressed .counter-value {
   color: var(--severity-medium);
+  font-size: var(--fs-stat);
+}
+
+.counter.incidents .counter-value {
+  color: var(--severity-critical);
+}
+
+.rate {
+  margin-top: var(--space-2);
+}
+
+.rate-bar {
+  height: 4px;
+  border-radius: 999px;
+  background: var(--surface-hover);
+  overflow: hidden;
+}
+
+.rate-fill {
+  height: 100%;
+  background: var(--severity-medium);
+  border-radius: 999px;
+  transition: width 300ms ease;
+}
+
+.rate-caption {
+  margin-top: var(--space-1);
+  font-size: var(--fs-micro);
+  color: var(--text-dim);
 }
