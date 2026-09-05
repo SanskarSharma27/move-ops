@@ -226,9 +226,14 @@ def _fold_children(
         parent["parent_id"] = None
         parent["headline"] = f"{parent_id} {detector.replace('_', ' ')} affected its vendors"
         incident_id = _incident_id(day, parent)
-        groups.append((parent, children))
+        absorbed_children = [
+            child
+            for child in children
+            if child["signal_id"] != representative["signal_id"]
+        ]
+        groups.append((parent, absorbed_children))
         performance = _child_performance(con, day, parent, children)
-        for child in children:
+        for child in absorbed_children:
             result.suppressions.append(
                 _child_suppression(day, child, parent, incident_id, performance)
             )
