@@ -1,2 +1,9 @@
-# sense needs nothing beyond backend/requirements.txt (duckdb, fastapi, pytest).
-# Every statistic here is computed in SQL on the connection common.db() hands us.
+# sense needs nothing beyond backend/requirements.txt to run: every statistic is
+# computed in SQL on the connection common.db() hands us.
+#
+# httpx is a test-only dependency. FastAPI's TestClient needs it, and tests/test_sense.py
+# exercises the four endpoints through the real app so that the contract's query names -
+# including `from`, which is a Python keyword and therefore an alias - are checked
+# against the router rather than assumed. The router tests skip themselves if it is
+# absent, so `make test` stays green without it.
+httpx>=0.27
