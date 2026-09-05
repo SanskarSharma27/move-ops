@@ -45,8 +45,12 @@
 .headline {
   font-size: var(--fs-body);
   font-weight: 500;
-  line-height: 1.4;
-  margin-bottom: var(--space-2);
+  line-height: 1.35;
+  margin-bottom: var(--space-1);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .meta {
@@ -55,13 +59,20 @@
   gap: var(--space-1);
   font-size: var(--fs-micro);
   color: var(--text-dim);
-  line-height: 1.6;
+  line-height: 1.5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 
   mat-icon {
     font-size: 12px;
     width: 12px;
     height: 12px;
     flex: none;
+  }
+
+  &.opened {
+    opacity: 0.75;
   }
 }
 

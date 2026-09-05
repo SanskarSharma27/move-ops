@@ -36,7 +36,7 @@
             <mat-panel-title>{{ row.signal?.headline ?? row.signal_id }}</mat-panel-title>
             <mat-panel-description class="mono">
               {{ row.as_of }}
-              <span *ngIf="row.signal"> · {{ row.signal.entity_id }}</span>
+              <span class="sep" *ngIf="row.signal">· {{ row.signal.entity_id }}</span>
             </mat-panel-description>
           </mat-expansion-panel-header>
 
