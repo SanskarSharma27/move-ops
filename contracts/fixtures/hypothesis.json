@@ -1,0 +1,33 @@
+[
+  {"hypothesis_id":"hyp0000000000001","incident_id":"inc0000000000001","name":"vendor_failure",
+   "statement":"One or two vendors degraded and dragged the site average down.",
+   "verdict":"refuted",
+   "test_sql":"select vendor, count(*) n, 100.0*count(*) filter (where is_ontime_15)/count(*) ota from mis.trips where office='Cedar Ridge Office' and business_unit='vanta-Aus' and trip_date='2026-07-21' group by 1",
+   "result":{"Sneha Mikhailov Travel":63.0,"Priya Mikhailov Travel":56.0,"Meera Pavlov Travel":56.7,"Anjali Mikhailov Travel":60.9,"Sanjay Mikhailov Travel":56.8},
+   "reasoning":"All five vendors fell into a 7-point band. A vendor-specific failure would show one or two outliers against healthy peers, not uniform degradation.",
+   "rank":1},
+
+  {"hypothesis_id":"hyp0000000000002","incident_id":"inc0000000000001","name":"electrification_cost",
+   "statement":"vanta-Aus is shifting to electric vehicles, and EVs are slower on these routes.",
+   "verdict":"refuted",
+   "test_sql":"select fuel_type, date_trunc('month',trip_date) m, 100.0*count(*) filter (where is_ontime_15)/count(*) ota from mis.trips where business_unit='vanta-Aus' group by 1,2",
+   "result":{"Diesel":{"may":89.5,"jun":84.8,"jul":81.7},"Electric":{"may":89.3,"jun":84.3,"jul":81.1},"control_orbit_Slc":{"Electric":72.5,"Diesel":71.7}},
+   "reasoning":"Diesel and electric decline in lockstep, 89.5 to 81.7 against 89.3 to 81.1. The orbit-Slc control shows electric at 72.5% against diesel at 71.7%, so there is no fuel-type penalty anywhere in the fleet.",
+   "rank":2},
+
+  {"hypothesis_id":"hyp0000000000003","incident_id":"inc0000000000001","name":"schedule_lag",
+   "statement":"Actual journey times degraded and the planning did not follow.",
+   "verdict":"supported",
+   "test_sql":"select date_trunc('month',trip_date) m, avg((actual_end-actual_start)/60.0)/avg(traveled_km) actual_min_per_km, avg((planned_end-planned_start)/60.0)/avg(planned_km) planned_min_per_km from mis.trips where business_unit='vanta-Aus' and planned_km>0 and traveled_km>0 group by 1",
+   "result":{"actual_min_per_km":{"may":3.194,"jun":3.433,"jul":3.530},"planned_min_per_km":{"may":3.003,"jun":3.106,"jul":3.106}},
+   "reasoning":"Actual minutes per km rose 10.5% while planned minutes per km rose only 3.4%. Journeys genuinely got slower and the schedule absorbed less than a third of the change.",
+   "rank":3},
+
+  {"hypothesis_id":"hyp0000000000004","incident_id":"inc0000000000002","name":"operational_improvement",
+   "statement":"Santa Clara improved its operations and punctuality followed.",
+   "verdict":"refuted",
+   "test_sql":"select case when trip_date<'2026-07-19' then 'before' else 'after' end p, avg((planned_end-planned_start)/60.0) planned_min, avg((actual_end-actual_start)/60.0) actual_min, count(distinct actual_cab_registration) cabs from mis.trips where office='Santa Clara Office' and trip_date>='2026-07-01' group by 1",
+   "result":{"before":{"planned_min":40.6,"actual_min":76.4,"cabs":334},"after":{"planned_min":58.1,"actual_min":77.0,"cabs":320}},
+   "reasoning":"Actual journey time rose from 76.4 to 77.0 minutes on 14 fewer cabs. Nothing about the operation improved; only the planned duration changed, by 43%.",
+   "rank":1}
+]

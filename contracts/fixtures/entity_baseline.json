@@ -1,0 +1,17 @@
+[
+  {"as_of":"2026-07-21","entity_type":"office","entity_id":"vanta-Aus / Cedar Ridge Office","parent_id":"vanta-Aus",
+   "metric":"ota15","value":59.3,"n":978,"baseline_mean":88.9,"baseline_sd":7.08,"baseline_n":4,"z":-4.18,
+   "peer_group":"vanta-Aus offices","peer_median":85.1,"peer_pctile":2.0,"slope_28d":-0.62},
+  {"as_of":"2026-07-21","entity_type":"vendor","entity_id":"Sneha Mikhailov Travel","parent_id":"vanta-Aus",
+   "metric":"ota15","value":63.2,"n":266,"baseline_mean":89.9,"baseline_sd":6.01,"baseline_n":4,"z":-4.44,
+   "peer_group":"vanta-Aus vendors","peer_median":85.6,"peer_pctile":5.0,"slope_28d":-0.71},
+  {"as_of":"2026-07-21","entity_type":"vendor","entity_id":"Meera Pavlov Travel","parent_id":"vanta-Aus",
+   "metric":"ota15","value":56.9,"n":195,"baseline_mean":89.7,"baseline_sd":8.18,"baseline_n":4,"z":-4.01,
+   "peer_group":"vanta-Aus vendors","peer_median":85.6,"peer_pctile":3.0,"slope_28d":-0.83},
+  {"as_of":"2026-07-21","entity_type":"business_unit","entity_id":"vanta-Aus","parent_id":null,
+   "metric":"ota15","value":59.3,"n":978,"baseline_mean":89.0,"baseline_sd":7.12,"baseline_n":4,"z":-4.17,
+   "peer_group":"business units","peer_median":66.3,"peer_pctile":8.0,"slope_28d":-0.58},
+  {"as_of":"2026-07-15","entity_type":"business_unit","entity_id":"catalyst-Sac","parent_id":null,
+   "metric":"ack_minutes","value":993.3,"n":3140,"baseline_mean":940.0,"baseline_sd":35.2,"baseline_n":8,"z":1.51,
+   "peer_group":"business units","peer_median":13.9,"peer_pctile":0.0,"slope_28d":1.24}
+]

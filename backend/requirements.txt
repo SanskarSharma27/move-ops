@@ -1,0 +1,7 @@
+# FROZEN — core deps only. Need something else? Add it to
+# backend/services/<yours>/requirements.txt, never to this file.
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+duckdb==1.1.3
+pydantic==2.10.4
+pytest==8.3.4
