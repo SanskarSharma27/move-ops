@@ -1,0 +1,15 @@
+[
+  {"playbook_id":"pbk0000000000001","signature":"punctuality_drop|office",
+   "action":"Check whether every vendor at the site degraded together before attributing the drop to any one vendor",
+   "n_cases":4,"n_confirmed":4,"confidence":1.0,
+   "evidence":{"case_ids":["CASE-0001"],"prediction_ids":["prd0000000000001","prd0000000000002","prd0000000000003"],
+               "note":"Site-wide degradation on 8, 15, 21 and 28 July was uniform across all five vendors every time."},
+   "promoted_on":"2026-07-21","updated_on":"2026-07-29"},
+
+  {"playbook_id":"pbk0000000000002","signature":"punctuality_drop|office",
+   "action":"Compare actual minutes per km against planned minutes per km before recommending any schedule change",
+   "n_cases":3,"n_confirmed":3,"confidence":1.0,
+   "evidence":{"case_ids":["CASE-0001"],"prediction_ids":["prd0000000000002","prd0000000000003"],
+               "note":"Distinguishes a genuine slowdown from schedule padding. Caught the Santa Clara case on 19 July."},
+   "promoted_on":"2026-07-28","updated_on":"2026-07-29"}
+]
