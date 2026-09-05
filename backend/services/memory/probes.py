@@ -24,14 +24,15 @@ def _close(a, b, tol) -> bool:
 
 
 def _texts(con, where: str = "", params=None) -> list[str]:
-    """Everything the agent wrote that a human will read."""
-    out = []
-    for sql in (f"select headline || ' ' || narrative from incident {where}",
-                f"select explanation from suppression {where.replace('incident', 'suppression')}"):
-        try:
-            out += [r[0] or "" for r in con.execute(sql, params or []).fetchall()]
-        except Exception:
-            pass
+    """Everything the agent wrote that a human will read.
+
+    A `where` narrows to incidents, since the filters probes use name incident
+    columns; without one, suppression explanations are included too.
+    """
+    out = [r[0] or "" for r in con.execute(
+        f"select headline || ' ' || narrative from incident {where}", params or []).fetchall()]
+    if not where:
+        out += [r[0] or "" for r in con.execute("select explanation from suppression").fetchall()]
     return out
 
 

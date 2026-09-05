@@ -7,7 +7,7 @@ import datetime as dt
 
 import duckdb
 import pytest
-from common import MIS_DB, SCHEMA, as_json, make_id, upsert
+from common import MIS_DB, SCHEMA, as_json, make_id, replay_days, upsert
 
 from memory import cases, evaluate, pipeline, playbook, probes, verify
 
@@ -209,3 +209,47 @@ def test_run_day_twice_changes_nothing(con):
     # eval_result carries a wall-clock stamp; everything else must be byte-identical.
     for table in ("case_file", "prediction", "playbook"):
         assert once[table] == twice[table], table
+
+
+# The demo arc ---------------------------------------------------------------
+def test_cedar_ridge_arc_earns_a_playbook_entry(con):
+    """The four real Cedar Ridge firings, replayed day by day.
+
+    The playbook is empty while only one diagnosis has been tested and fills up
+    once a second one holds, and the case escalates to structural on the fourth
+    occurrence. This is the learning loop the whole service exists to show.
+    """
+    for i, day in enumerate(dt.date(2026, 7, d) for d in (8, 15, 21, 28)):
+        add_incident(con, f"i{i}", day)
+    add_hypotheses(con, "i0")
+
+    def replay(first, last):
+        for day in replay_days(dt.date(2026, 7, first), dt.date(2026, 7, last)):
+            pipeline.run_day(con, day)
+
+    def count(table):
+        return con.execute(f"select count(*) from {table}").fetchone()[0]
+
+    replay(1, 10)
+    assert count("playbook") == 0, "nothing has been verified twice yet"
+    assert con.execute("select status from case_file").fetchone()[0] == "open"
+
+    replay(11, 21)
+    assert count("playbook") == 1
+    promoted_on, confidence = con.execute(
+        "select promoted_on, confidence from playbook").fetchone()
+    assert promoted_on <= dt.date(2026, 7, 21)
+    assert confidence == 1.0
+
+    replay(22, 31)
+    occurrences, status = con.execute(
+        "select occurrences, status from case_file").fetchone()
+    assert occurrences == 4
+    assert status == "structural"
+
+    confirmed, refuted = con.execute(
+        """select count(*) filter (where outcome = 'confirmed'),
+                  count(*) filter (where outcome = 'refuted') from prediction""").fetchone()
+    assert confirmed >= 3 and refuted >= 0
+    assert not con.execute(
+        "select count(*) from playbook where n_confirmed < 2").fetchone()[0]
