@@ -17,7 +17,7 @@ help:
 	@echo "make test      run every service's tests"
 
 install:
-	$(UV) venv $(VENV)
+	$(UV) venv --allow-existing $(VENV)
 	$(UV) pip install --python $(PY) -r backend/requirements.txt
 	@for f in backend/services/*/requirements.txt; do \
 	  if [ -f "$$f" ]; then echo "installing $$f"; $(UV) pip install --python $(PY) -r "$$f"; fi; \
