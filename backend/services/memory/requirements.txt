@@ -1,0 +1,2 @@
+# No dependencies beyond backend/requirements.txt. Every gate is deterministic SQL
+# and stdlib regex — there is no LLM anywhere in this service, by design.
