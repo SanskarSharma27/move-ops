@@ -12,47 +12,44 @@ from .narrate import build_incident, structuralize_recommendation
 
 
 def run_day(con: Any, day: date) -> None:
-    """Reason over one business date, transactionally and idempotently."""
+    """Reason over one business date idempotently."""
 
-    con.execute("begin transaction")
-    try:
-        _clear_day(con, day)
-        signals = _rows(
-            con,
-            """select * from signal where as_of = ?
-               order by created_at, signal_id""",
-            [day],
-        )
-        decisions = correlate(con, day, signals)
+    # Keep these statements in autocommit mode. DuckDB 1.1 retains primary-key
+    # index entries until an explicit transaction ends, so delete-then-insert
+    # (the shared upsert contract) cannot replace a row inside one outer transaction.
+    _clear_day(con, day)
+    signals = _rows(
+        con,
+        """select * from signal where as_of = ?
+           order by created_at, signal_id""",
+        [day],
+    )
+    decisions = correlate(con, day, signals)
 
-        for incident_id in decisions.structural_incident_ids:
-            row = con.execute(
-                "select recommendation from incident where incident_id = ?",
-                [incident_id],
-            ).fetchone()
-            if row:
-                con.execute(
-                    """update incident
-                       set status = 'structural', recommendation = ?
-                       where incident_id = ?""",
-                    [structuralize_recommendation(row[0]), incident_id],
-                )
+    for incident_id in decisions.structural_incident_ids:
+        row = con.execute(
+            "select recommendation from incident where incident_id = ?",
+            [incident_id],
+        ).fetchone()
+        if row:
+            con.execute(
+                """update incident
+                   set status = 'structural', recommendation = ?
+                   where incident_id = ?""",
+                [structuralize_recommendation(row[0]), incident_id],
+            )
 
-        incident_rows: list[dict[str, Any]] = []
-        hypothesis_rows: list[dict[str, Any]] = []
-        for candidate in decisions.incidents:
-            hypotheses = build_hypotheses(con, candidate, day)
-            _assert_trace(candidate.incident_id, hypotheses)
-            incident_rows.append(build_incident(con, candidate, day, hypotheses))
-            hypothesis_rows.extend(hypotheses)
+    incident_rows: list[dict[str, Any]] = []
+    hypothesis_rows: list[dict[str, Any]] = []
+    for candidate in decisions.incidents:
+        hypotheses = build_hypotheses(con, candidate, day)
+        _assert_trace(candidate.incident_id, hypotheses)
+        incident_rows.append(build_incident(con, candidate, day, hypotheses))
+        hypothesis_rows.extend(hypotheses)
 
-        upsert(con, "incident", incident_rows, key="incident_id")
-        upsert(con, "suppression", decisions.suppressions, key="suppression_id")
-        upsert(con, "hypothesis", hypothesis_rows, key="hypothesis_id")
-        con.execute("commit")
-    except Exception:
-        con.execute("rollback")
-        raise
+    upsert(con, "incident", incident_rows, key="incident_id")
+    upsert(con, "suppression", decisions.suppressions, key="suppression_id")
+    upsert(con, "hypothesis", hypothesis_rows, key="hypothesis_id")
 
 
 def _clear_day(con: Any, day: date) -> None:
