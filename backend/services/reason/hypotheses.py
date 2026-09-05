@@ -6,7 +6,7 @@ with bound parameters, and persisted with those parameters for auditability.
 from __future__ import annotations
 
 import json
-from datetime import date
+from datetime import date, timedelta
 from typing import Any
 
 from common import as_json, make_id
@@ -267,7 +267,7 @@ def _systemic_day_event(con: Any, candidate: Any, day: date) -> dict[str, Any]:
 
 
 def _demand_surge(con: Any, candidate: Any, day: date) -> dict[str, Any]:
-    params = [day.replace(day=1), day, *_entity_params(candidate), day, day, day]
+    params = [day - timedelta(days=28), day, *_entity_params(candidate), day, day, day]
     row = _one(con, DEMAND_SURGE_SQL, params)
     current, trailing, change = _three(row)
     result = {
@@ -300,7 +300,7 @@ def _demand_surge(con: Any, candidate: Any, day: date) -> dict[str, Any]:
 
 def _capacity_shortfall(con: Any, candidate: Any, day: date) -> dict[str, Any]:
     params = [
-        day.replace(day=1),
+        day - timedelta(days=28),
         day,
         *_entity_params(candidate),
         day,
