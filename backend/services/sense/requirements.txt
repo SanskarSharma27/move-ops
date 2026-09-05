@@ -1,0 +1,2 @@
+# sense needs nothing beyond backend/requirements.txt (duckdb, fastapi, pytest).
+# Every statistic here is computed in SQL on the connection common.db() hands us.
