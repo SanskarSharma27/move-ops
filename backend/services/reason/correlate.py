@@ -23,6 +23,12 @@ REASON_ORDER = (
 )
 MIN_SAMPLE = 40
 CHILD_SHARE = 0.60
+SAMPLE_FLOOR_DETECTORS = {
+    "punctuality_drop",
+    "metric_integrity",
+    "noshow_spike",
+    "vendor_chronic",
+}
 
 
 @dataclass
@@ -69,7 +75,10 @@ def correlate(
     # 2. Small samples.
     adequately_sized: list[dict[str, Any]] = []
     for signal in pending:
-        if _number(signal.get("n"), 0) < MIN_SAMPLE:
+        if (
+            signal.get("detector") in SAMPLE_FLOOR_DETECTORS
+            and _number(signal.get("n"), 0) < MIN_SAMPLE
+        ):
             result.suppressions.append(_small_sample_suppression(day, signal))
         else:
             adequately_sized.append(signal)
@@ -319,9 +328,9 @@ def _known_pattern(
         row = con.execute(
             """select occurrences, incident_ids
                from case_file
-               where signature = ? and occurrences >= 3
+               where signature = ? and occurrences >= 3 and last_seen_on < ?
                order by last_seen_on desc limit 1""",
-            [signature],
+            [signature, day],
         ).fetchone()
         if row:
             incident_ids = _json_value(row[1], [])
