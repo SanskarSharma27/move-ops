@@ -1,0 +1,93 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+}
+
+.clock-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.clock-label {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+}
+
+.clock-date {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.range-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.transport {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.presets {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.presets-label {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.presets button {
+  width: 100%;
+  justify-content: flex-start;
+  font-family: var(--font-mono);
+  font-size: 12px;
+
+  &.active {
+    border-color: var(--positive);
+    color: var(--positive);
+  }
+}
+
+.counters {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.counter {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.counter-value {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.counter-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.counter.suppressed .counter-value {
+  color: var(--severity-medium);
+}

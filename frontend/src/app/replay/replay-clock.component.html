@@ -1,0 +1,63 @@
+<ng-container *ngIf="state$ | async as state">
+  <div class="clock-header">
+    <div class="clock-label">REPLAY</div>
+    <div class="clock-date mono">{{ formatDay(state.current_day) }}</div>
+  </div>
+
+  <mat-progress-bar mode="determinate" [value]="(progress$ | async) ?? 0"></mat-progress-bar>
+  <div class="range-labels mono">
+    <span>1 Jul</span>
+    <span>31 Jul</span>
+  </div>
+
+  <div class="transport">
+    <button mat-icon-button matTooltip="Back one day" (click)="step(-1)" [disabled]="state.current_day === state.first_day">
+      <mat-icon>skip_previous</mat-icon>
+    </button>
+    <button mat-fab color="primary" (click)="toggle(state)" [attr.aria-label]="state.status === 'playing' ? 'Pause' : 'Play'">
+      <mat-icon>{{ state.status === 'playing' ? 'pause' : 'play_arrow' }}</mat-icon>
+    </button>
+    <button mat-icon-button matTooltip="Forward one day" (click)="step(1)" [disabled]="state.current_day === state.last_day">
+      <mat-icon>skip_next</mat-icon>
+    </button>
+    <button mat-icon-button matTooltip="Reset to 1 Jul" (click)="reset()">
+      <mat-icon>restart_alt</mat-icon>
+    </button>
+  </div>
+
+  <div class="presets">
+    <div class="presets-label">JUMP TO</div>
+    <button
+      mat-stroked-button
+      *ngFor="let p of presets"
+      [matTooltip]="p.hint"
+      [class.active]="state.current_day === p.day"
+      (click)="seek(p.day)"
+    >
+      {{ p.label }}
+    </button>
+  </div>
+
+  <div class="counters">
+    <div class="counter">
+      <div class="counter-value mono">{{ state.days_done }}</div>
+      <div class="counter-label">days elapsed</div>
+    </div>
+    <div class="counter">
+      <div class="counter-value mono">{{ state.trips_seen | number }}</div>
+      <div class="counter-label">trips processed</div>
+    </div>
+    <div class="counter">
+      <div class="counter-value mono">{{ state.signals_raised }}</div>
+      <div class="counter-label">signals raised</div>
+    </div>
+    <div class="counter suppressed">
+      <div class="counter-value mono">{{ state.suppressed }}</div>
+      <div class="counter-label">suppressed</div>
+    </div>
+    <div class="counter">
+      <div class="counter-value mono">{{ state.incidents_open }}</div>
+      <div class="counter-label">incidents open</div>
+    </div>
+  </div>
+</ng-container>

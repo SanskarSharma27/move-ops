@@ -1,0 +1,32 @@
+<section class="whatif" *ngIf="options.length; else noLevers">
+  <h3>What if…</h3>
+  <div class="controls">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Lever</mat-label>
+      <mat-select [(ngModel)]="selectedKey">
+        <mat-option *ngFor="let o of options" [value]="o.key">{{ o.label }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <button mat-flat-button color="primary" [disabled]="!selectedKey || asking" (click)="ask()">
+      Re-ask
+    </button>
+  </div>
+
+  <div class="result" *ngIf="result as r" [class.negative]="r.delta < -0.05" [class.positive]="r.delta > 0.5">
+    <div class="result-numbers mono">
+      {{ r.baseline_value }}{{ r.baseline_value <= 100 ? '%' : '' }}
+      <mat-icon inline="true">arrow_forward</mat-icon>
+      {{ r.projected_value }}{{ r.projected_value <= 100 ? '%' : '' }}
+      <span class="delta">({{ r.delta > 0 ? '+' : '' }}{{ r.delta }})</span>
+      <span class="confidence" [ngClass]="r.confidence">{{ r.confidence }}</span>
+    </div>
+    <p class="narrative">{{ r.narrative }}</p>
+  </div>
+</section>
+
+<ng-template #noLevers>
+  <section class="whatif empty">
+    <h3>What if…</h3>
+    <p>No counterfactual levers computed for this incident yet.</p>
+  </section>
+</ng-template>

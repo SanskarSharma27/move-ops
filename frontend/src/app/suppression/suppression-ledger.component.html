@@ -1,0 +1,44 @@
+<div class="ledger" *ngIf="summary as s">
+  <div class="funnel">
+    <div class="funnel-stage">
+      <div class="funnel-value mono">{{ s.window.raw_signals }}</div>
+      <div class="funnel-label">raw signals</div>
+      <div class="funnel-today mono">+{{ s.raw_signals }} today</div>
+    </div>
+    <div class="funnel-arrow">→</div>
+    <div class="funnel-stage">
+      <div class="funnel-value mono suppressed">{{ s.window.suppressed }}</div>
+      <div class="funnel-label">suppressed</div>
+      <div class="funnel-today mono">+{{ s.suppressed }} today</div>
+    </div>
+    <div class="funnel-arrow">→</div>
+    <div class="funnel-stage">
+      <div class="funnel-value mono">{{ s.window.incidents }}</div>
+      <div class="funnel-label">incidents</div>
+      <div class="funnel-today mono">+{{ s.incidents }} today</div>
+    </div>
+  </div>
+
+  <div class="groups scroll-y">
+    <div class="empty" *ngIf="!groups.length">No suppressions recorded yet as of this date.</div>
+
+    <mat-accordion *ngFor="let g of groups" multi="false">
+      <div class="group-header">
+        <span class="reason-chip" [ngClass]="g.reason_code">{{ g.reason_code }}</span>
+        <span class="group-read">{{ g.label }}</span>
+        <span class="group-count mono">{{ g.count }}</span>
+      </div>
+
+      <mat-expansion-panel *ngFor="let row of g.rows">
+        <mat-expansion-panel-header>
+          <mat-panel-title>{{ row.signal?.headline ?? row.signal_id }}</mat-panel-title>
+          <mat-panel-description class="mono">{{ row.as_of }}</mat-panel-description>
+        </mat-expansion-panel-header>
+        <p class="explanation">{{ row.explanation }}</p>
+        <ul class="evidence-list mono">
+          <li *ngFor="let e of row.evidence">{{ e.claim }}: {{ e.value }}{{ e.unit }} <span class="source">({{ e.source }})</span></li>
+        </ul>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>
+</div>

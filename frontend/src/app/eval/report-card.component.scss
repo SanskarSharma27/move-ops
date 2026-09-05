@@ -1,0 +1,52 @@
+.strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0;
+  height: 100%;
+  padding: 0 12px;
+}
+
+.metric {
+  all: unset;
+  cursor: pointer;
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 16px;
+  border-right: 1px solid var(--border);
+
+  &:last-of-type {
+    border-right: none;
+  }
+
+  &:hover, &.open {
+    background: var(--surface-raised);
+  }
+}
+
+.metric-label {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.metric-value {
+  font-size: 13px;
+  color: var(--severity-medium);
+
+  &.pass {
+    color: var(--positive);
+  }
+}
+
+.detail {
+  flex-basis: 100%;
+  padding: 8px 16px 4px;
+  font-size: 12px;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+}

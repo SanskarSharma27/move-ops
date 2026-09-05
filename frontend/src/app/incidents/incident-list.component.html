@@ -1,0 +1,19 @@
+<div class="list scroll-x">
+  <div
+    class="incident-card"
+    *ngFor="let inc of incidents"
+    [class.active]="inc.incident_id === selectedId"
+    (click)="pick(inc.incident_id)"
+  >
+    <div class="row-top">
+      <span class="severity-chip" [ngClass]="inc.severity">{{ inc.severity }}</span>
+      <span class="status mono">{{ inc.status }}</span>
+    </div>
+    <div class="headline">{{ inc.headline }}</div>
+    <div class="meta mono">{{ inc.entity_id }} · opened {{ inc.opened_on }}</div>
+  </div>
+
+  <div class="empty" *ngIf="!incidents.length">
+    No incidents opened yet as of this date.
+  </div>
+</div>

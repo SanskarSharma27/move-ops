@@ -1,0 +1,45 @@
+.field-trust {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 70px 32px;
+  align-items: center;
+  gap: 8px;
+}
+
+.field-name {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.trust-bar-track {
+  height: 6px;
+  background: var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.trust-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+
+  &.trusted { background: var(--trust-trusted); }
+  &.degraded { background: var(--trust-degraded); }
+  &.quarantined { background: var(--trust-quarantined); }
+}
+
+.trust-value {
+  font-size: 11px;
+  text-align: right;
+
+  &.trusted { color: var(--trust-trusted); }
+  &.degraded { color: var(--trust-degraded); }
+  &.quarantined { color: var(--trust-quarantined); }
+}

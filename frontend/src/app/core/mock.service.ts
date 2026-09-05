@@ -225,12 +225,21 @@ export class MockService {
       map(({ incidents, counterfactuals }) => {
         const inc = incidents.find((i) => i.incident_id === incidentId);
         if (!inc) return undefined;
+        // Offices carry a business-unit level counterfactual too ("business_unit / office"),
+        // so a lever proposed at the unit level still resolves from an office-level incident.
+        const candidateIds =
+          inc.entity_type === 'office' ? [inc.entity_id, inc.entity_id.split(' / ')[0]] : [inc.entity_id];
         const cf = counterfactuals.find(
-          (c) => c.entity_id === inc.entity_id && c.lever === lever && c.param === param
+          (c) => candidateIds.includes(c.entity_id) && c.lever === lever && c.param === param
         );
         if (!cf) return undefined;
-        const direction = cf.delta > 0 ? 'improves' : cf.delta < 0 ? 'worsens slightly' : 'does not change';
-        const narrative = `${cf.assumption} Projected ${cf.metric} moves from ${cf.baseline_value}% to ${cf.projected_value}% (${direction}).`;
+        const verdict =
+          cf.delta > 0.5
+            ? `rises from ${cf.baseline_value}% to ${cf.projected_value}%`
+            : cf.delta < -0.05
+              ? `moves from ${cf.baseline_value}% to ${cf.projected_value}% — slightly worse. Not recommended`
+              : `stays flat at ${cf.baseline_value}%`;
+        const narrative = `${cf.assumption} Projected ${cf.metric} ${verdict}.`;
         return { ...cf, narrative };
       })
     );
