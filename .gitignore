@@ -1,0 +1,21 @@
+# data — never commit, each person builds locally
+*.duckdb
+*.duckdb.wal
+*.csv
+MoveInSync*/
+
+# python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# node
+node_modules/
+frontend/dist/
+frontend/.angular/
+
+# editors / os
+.DS_Store
+.idea/
+.vscode/
