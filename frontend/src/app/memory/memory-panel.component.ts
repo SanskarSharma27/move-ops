@@ -51,4 +51,8 @@ export class MemoryPanelComponent implements OnInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
   }
+
+  trackByCaseId(_index: number, c: CaseFile): string {
+    return c.case_id;
+  }
 }

@@ -87,6 +87,30 @@ body {
   font-family: var(--font-mono);
 }
 
+// New DOM nodes (a freshly-revealed incident/suppression/playbook row as the
+// replay clock steps forward) get this for free — CSS animations run on
+// insertion, so no JS/Angular-animation trigger is needed.
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card-in {
+  animation: card-in 300ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-in {
+    animation: none;
+  }
+}
+
 .strike {
   text-decoration: line-through;
   text-decoration-color: var(--severity-critical);

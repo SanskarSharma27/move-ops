@@ -22,14 +22,14 @@
   <div class="groups scroll-y">
     <div class="empty" *ngIf="!groups.length">No suppressions recorded yet as of this date.</div>
 
-    <mat-accordion *ngFor="let g of groups" multi="false">
+    <mat-accordion class="card-in" *ngFor="let g of groups; trackBy: trackByReason" multi="false">
       <div class="group-header">
         <span class="reason-chip" [ngClass]="g.reason_code">{{ g.reason_code }}</span>
         <span class="group-read">{{ g.label }}</span>
         <span class="group-count mono">{{ g.count }}</span>
       </div>
 
-      <mat-expansion-panel *ngFor="let row of g.rows">
+      <mat-expansion-panel class="card-in" *ngFor="let row of g.rows; trackBy: trackBySuppressionId">
         <mat-expansion-panel-header>
           <mat-panel-title>{{ row.signal?.headline ?? row.signal_id }}</mat-panel-title>
           <mat-panel-description class="mono">{{ row.as_of }}</mat-panel-description>

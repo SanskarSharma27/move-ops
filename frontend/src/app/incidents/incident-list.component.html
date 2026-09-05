@@ -1,6 +1,6 @@
 <div class="list scroll-x">
   <div
-    class="incident-card"
+    class="incident-card card-in"
     *ngFor="let inc of incidents"
     [class.active]="inc.incident_id === selectedId"
     (click)="pick(inc.incident_id)"

@@ -66,4 +66,12 @@ export class SuppressionLedgerComponent implements OnInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
   }
+
+  trackByReason(_index: number, group: ReasonGroup): ReasonCode {
+    return group.reason_code;
+  }
+
+  trackBySuppressionId(_index: number, row: Suppression): string {
+    return row.suppression_id;
+  }
 }

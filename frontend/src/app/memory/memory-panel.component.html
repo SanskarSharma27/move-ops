@@ -8,7 +8,7 @@
     <h3>Cases</h3>
     <div class="empty" *ngIf="!cases.length">No open cases yet.</div>
     <mat-accordion multi="false">
-      <mat-expansion-panel *ngFor="let c of cases">
+      <mat-expansion-panel *ngFor="let c of cases; trackBy: trackByCaseId">
         <mat-expansion-panel-header>
           <mat-panel-title>
             <span class="case-entity">{{ c.entity_id }}</span>
@@ -46,7 +46,7 @@
   <section>
     <h3>Playbook</h3>
     <div class="empty" *ngIf="!playbook.length">Empty so far — entries appear as cases confirm predictions.</div>
-    <div class="playbook-entry" *ngFor="let p of playbook">
+    <div class="playbook-entry card-in" *ngFor="let p of playbook">
       <div class="playbook-action">{{ p.action }}</div>
       <div class="playbook-meta mono">
         confidence {{ p.confidence | number: '1.0-2' }} · cases {{ p.evidence.case_ids.join(', ') }}
