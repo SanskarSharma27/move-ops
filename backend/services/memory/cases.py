@@ -173,4 +173,10 @@ def write(con, day: dt.date, cases: list[dict]) -> int:
             "created_at": dt.datetime.combine(case["opened_on"], dt.time(23, 59, 40)),
             "updated_at": stamp,
         })
+    # Memory's state is a pure function of the evidence, so anything not rebuilt
+    # this pass — a seeded fixture row, a case whose incident was withdrawn — goes.
+    live = [r["case_id"] for r in rows] or [""]
+    marks = ",".join("?" * len(live))
+    con.execute(f"delete from prediction where case_id not in ({marks})", live)
+    con.execute(f"delete from case_file where case_id not in ({marks})", live)
     return upsert(con, "case_file", rows, key="case_id")

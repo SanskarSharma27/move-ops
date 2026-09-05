@@ -111,15 +111,20 @@ def holds(predicate: str, value: float, threshold: float, threshold_hi: float | 
     raise ValueError(f"unknown predicate {predicate!r}")
 
 
-def trailing(con, metric, entity_type, entity_id, day, days: int = 28) -> float | None:
-    """Median of the entity's own recent daily values — what 'normal' means for it."""
+def trailing(con, metric, entity_type, entity_id, day, days: int = 28):
+    """(median, worst) of the entity's own recent daily values.
+
+    `normal` for an entity is its own recent behaviour, not the fleet's: a site
+    running at 36% on-time and a site running at 88% cannot share a threshold.
+    """
     series = observe(con, metric, entity_type, entity_id,
                      day - dt.timedelta(days=days), day)
     if not series:
-        return None
+        return None, None
     vals = sorted(v for _, v, _ in series)
     mid = len(vals) // 2
-    return vals[mid] if len(vals) % 2 else (vals[mid - 1] + vals[mid]) / 2
+    median = vals[mid] if len(vals) % 2 else (vals[mid - 1] + vals[mid]) / 2
+    return median, vals
 
 
 def make_prediction(con, case: dict, metric: str, day: dt.date) -> dict | None:
@@ -130,19 +135,26 @@ def make_prediction(con, case: dict, metric: str, day: dt.date) -> dict | None:
     """
     if metric not in METRICS:
         return None
-    base = trailing(con, metric, case["entity_type"], case["entity_id"], day)
-    if base is None:
+    # Anchored on the day the case opened, not on today. A bar that drifts up to
+    # meet the current level is self-fulfilling; this one stays where it was set,
+    # so re-testing it week after week means something.
+    median, vals = trailing(con, metric, case["entity_type"], case["entity_id"],
+                            case["opened_on"])
+    if median is None:
         return None
     unit = METRICS[metric]["unit"]
     label = METRICS[metric]["label"]
-    if metric in WORSE_WHEN_HIGH:
-        predicate, threshold = "gt", round(max(base * 1.5, base + 1.0), 1)
-    elif case["detector"] == "metric_integrity":
-        # The Santa Clara case: the level is real, the improvement is not. Predict the
-        # inflated level persists while the underlying journey does not change.
-        predicate, threshold = "gt", round(base * 0.85, 1)
+    # Halfway between the entity's own normal and its own worst. A threshold the
+    # entity clears every week is not a prediction, and one it can never miss is
+    # not falsifiable — this one is genuinely refutable, and gets refuted.
+    if metric in WORSE_WHEN_HIGH or case["detector"] == "metric_integrity":
+        predicate = "gt"
+        threshold = round(max((median + vals[-1]) / 2, median + 1.0), 1)
     else:
-        predicate, threshold = "lt", round(min(80.0, base - 5.0), 1)
+        predicate = "lt"
+        midpoint = min((median + vals[0]) / 2, median - 1.0)
+        # An entity whose normal clears the 80% on-time target is held to the target.
+        threshold = round(80.0 if (metric == "ota15" and median > 80.0) else midpoint, 1)
     verify_on = day + dt.timedelta(days=HORIZON_DAYS)
     direction = "above" if predicate == "gt" else "below"
     statement = (f"{case['entity_id']} {label} will go {direction} {threshold}{unit} "
@@ -176,15 +188,18 @@ def ensure_pending(con, day: dt.date, cases: list[dict]) -> int:
 
 
 def verify_due(con, day: dt.date) -> list[dict]:
-    """Score every prediction whose verify_on has arrived. Refutations are kept.
+    """Score predictions against what actually happened. Refutations are kept.
 
-    An agent that shows a wrong prediction is more credible than one that shows
-    only wins, so nothing here is quietly dropped.
+    A claim is closed the day the data settles it: "within seven days" is confirmed
+    on the day the entity breaches, not a week later. Only refutation and
+    unverifiability wait for the horizon to run out. An agent that shows a wrong
+    prediction is more credible than one that shows only wins, so nothing here is
+    quietly dropped.
     """
     due = con.execute(
         """select prediction_id, made_on, verify_on, metric, entity_type, entity_id,
                   predicate, threshold, threshold_hi
-           from prediction where outcome is null and verify_on <= ?""",
+           from prediction where outcome is null and made_on < ?""",
         [day],
     ).fetchall()
     out = []
@@ -197,6 +212,8 @@ def verify_due(con, day: dt.date) -> list[dict]:
             outcome = "confirmed"
             verified_on, observed = hits[0][0], (
                 min(v for _, v in hits) if predicate == "lt" else max(v for _, v in hits))
+        elif day < verify_on:
+            continue                       # the horizon has not run out yet
         elif series:
             outcome = "refuted"
             # The nearest miss is the honest number to show next to a refutation.
@@ -207,6 +224,6 @@ def verify_due(con, day: dt.date) -> list[dict]:
             outcome, verified_on, observed = "unverifiable", window_end, None
         con.execute(
             "update prediction set outcome = ?, observed = ?, verified_on = ? where prediction_id = ?",
-            [outcome, observed, verified_on, pid])
+            [outcome, None if observed is None else round(observed, 2), verified_on, pid])
         out.append({"prediction_id": pid, "outcome": outcome, "observed": observed})
     return out

@@ -80,4 +80,6 @@ def promote(con, day: dt.date) -> int:
             "promoted_on": confirmed[MIN_CONFIRMED - 1][3],
             "updated_on": day,
         })
+    live = [r["playbook_id"] for r in out] or [""]
+    con.execute(f"delete from playbook where playbook_id not in ({','.join('?' * len(live))})", live)
     return upsert(con, "playbook", out, key="playbook_id")
