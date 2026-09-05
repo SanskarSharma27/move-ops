@@ -17,7 +17,6 @@ def run_day(con: Any, day: date) -> None:
     # Keep these statements in autocommit mode. DuckDB 1.1 retains primary-key
     # index entries until an explicit transaction ends, so delete-then-insert
     # (the shared upsert contract) cannot replace a row inside one outer transaction.
-    _clear_day(con, day)
     signals = _rows(
         con,
         """select * from signal where as_of = ?
@@ -26,6 +25,17 @@ def run_day(con: Any, day: date) -> None:
     )
     decisions = correlate(con, day, signals)
 
+    incident_rows: list[dict[str, Any]] = []
+    hypothesis_rows: list[dict[str, Any]] = []
+    for candidate in decisions.incidents:
+        hypotheses = build_hypotheses(con, candidate, day)
+        _assert_trace(candidate.incident_id, hypotheses)
+        incident_rows.append(build_incident(con, candidate, day, hypotheses))
+        hypothesis_rows.extend(hypotheses)
+
+    # Compute and validate first so a reasoning failure leaves the previous good
+    # output in place. The replacement statements themselves remain autocommitted.
+    _clear_day(con, day)
     for incident_id in decisions.structural_incident_ids:
         row = con.execute(
             "select recommendation from incident where incident_id = ?",
@@ -38,14 +48,6 @@ def run_day(con: Any, day: date) -> None:
                    where incident_id = ?""",
                 [structuralize_recommendation(row[0]), incident_id],
             )
-
-    incident_rows: list[dict[str, Any]] = []
-    hypothesis_rows: list[dict[str, Any]] = []
-    for candidate in decisions.incidents:
-        hypotheses = build_hypotheses(con, candidate, day)
-        _assert_trace(candidate.incident_id, hypotheses)
-        incident_rows.append(build_incident(con, candidate, day, hypotheses))
-        hypothesis_rows.extend(hypotheses)
 
     upsert(con, "incident", incident_rows, key="incident_id")
     upsert(con, "suppression", decisions.suppressions, key="suppression_id")
