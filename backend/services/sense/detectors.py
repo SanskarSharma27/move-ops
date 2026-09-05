@@ -342,14 +342,14 @@ like_for_like as (
 ),
 vanished as (
     select bu, et, n_before, ack_before,
-           row_number() over (partition by bu order by n_before desc) as rn
+           row_number() over (partition by bu order by n_before desc, et) as rn
     from by_type where n_after = 0 and n_before >= $min_alerts
 ),
 -- the biggest category present in both halves, as the control: if it did not move,
 -- nothing was fixed.
 control as (
     select bu, et, n_before, n_after, ack_before, ack_after,
-           row_number() over (partition by bu order by n_before + n_after desc) as rn
+           row_number() over (partition by bu order by n_before + n_after desc, et) as rn
     from by_type where n_after > 0 and n_before > 0
 ),
 last_seen as (
@@ -500,7 +500,7 @@ def safety_cluster(con, day: date, base: list[dict]) -> list[dict]:
         detail = _rows(con.execute("""
             select event_type, count(*) as n from mis.alerts
             where business_unit = ? and cast(raised_at as date) = ? and severity = 'Sev-1'
-            group by 1 order by 2 desc limit 2""", [entity_id, day]))
+            group by 1 order by 2 desc, 1 limit 2""", [entity_id, day]))
         ack = con.execute("""
             select avg(ack_minutes) from mis.alerts
             where business_unit = ? and cast(raised_at as date) = ?""",
@@ -539,7 +539,7 @@ where a.event_type = 'WOMAN_TRAVELLING_ALONE'
   and not t.actual_escort
   and cast(a.raised_at as date) = $day
   and t.business_unit is not null
-group by 1 order by 3 desc
+group by 1 order by 3 desc, 2 desc, 1
 """
 
 
@@ -634,7 +634,8 @@ worst_vendor as (
              100.0 * count(*) filter (where is_zero_km) / count(*) as zero_pct,
              sum(trip_cost) filter (where is_zero_km) as zero_spend,
              row_number() over (partition by business_unit
-                                order by sum(trip_cost) filter (where is_zero_km) desc) as rn
+                                order by sum(trip_cost) filter (where is_zero_km) desc,
+                                         vendor) as rn
       from mis.bills where cycle_end = $day and business_unit is not null and vendor is not null
       group by 1, 2
     ) where rn = 1

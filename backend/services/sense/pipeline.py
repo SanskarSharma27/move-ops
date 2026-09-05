@@ -16,7 +16,10 @@ from . import baselines, counterfactual, detectors, field_trust
 
 log = logging.getLogger("sense")
 
-_audited: set[int] = set()
+# Connections already audited in this process. The connection object is the *value*, not
+# just its id, so a closed connection cannot have its address reused by a later one and
+# silently skip the audit.
+_audited: dict[int, object] = {}
 
 
 def run_day(con, day: date) -> None:
@@ -30,11 +33,11 @@ def run_day(con, day: date) -> None:
 def _audit_once(con, day: date) -> None:
     """The field audit is a property of the dataset, not of a day. Run it once.
 
-    Keyed on the connection so a replay that starts mid-window still gets an audit -
-    without it every detector would raise on the first `guard` call.
+    Keyed on the connection rather than on the date so a replay that starts mid-window
+    still gets an audit. Without one, the first `guard` call would find an empty
+    field_trust table, and every detector would run against columns nothing had cleared.
     """
-    key = id(con)
-    if key in _audited and day != FIRST_DAY:
+    if id(con) in _audited and day != FIRST_DAY:
         return
     field_trust.audit(con, day)
-    _audited.add(key)
+    _audited[id(con)] = con
