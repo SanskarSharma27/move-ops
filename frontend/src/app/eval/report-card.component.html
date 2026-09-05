@@ -2,7 +2,7 @@
   <button class="metric" [class.open]="expanded === 'faithfulness'" (click)="toggle('faithfulness')">
     <div class="metric-label">Faithfulness</div>
     <div class="metric-value mono" [class.pass]="c.faithfulness.passed">
-      {{ c.faithfulness.unsourced_number_rate }} unsourced / {{ c.faithfulness.statements_checked }} statements
+      {{ unsourcedCount(c) }} unsourced numbers / {{ c.faithfulness.statements_checked | number }} statements
     </div>
   </button>
 

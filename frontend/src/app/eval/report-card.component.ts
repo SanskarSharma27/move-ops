@@ -23,4 +23,8 @@ export class ReportCardComponent implements OnInit {
   toggle(key: string): void {
     this.expanded = this.expanded === key ? null : key;
   }
+
+  unsourcedCount(c: ReportCard): number {
+    return Math.round(c.faithfulness.unsourced_number_rate * c.faithfulness.numbers_extracted);
+  }
 }

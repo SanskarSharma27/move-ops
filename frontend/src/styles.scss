@@ -121,6 +121,30 @@ a {
   &.low { background: var(--severity-low) !important; color: #000 !important; }
 }
 
+// Panel headers here routinely wrap to two lines (long signal/suppression
+// headlines); Material's fixed 48px header height overlaps title and
+// description when that happens, so let the header grow instead.
+.mat-expansion-panel-header {
+  height: auto !important;
+  min-height: 48px;
+  padding: 10px 16px !important;
+
+  .mat-content {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 2px;
+  }
+
+  .mat-expansion-panel-header-title,
+  .mat-expansion-panel-header-description {
+    margin-right: 0;
+  }
+
+  .mat-expansion-panel-header-description {
+    color: var(--text-muted);
+  }
+}
+
 .reason-chip {
   &.composition { background: var(--reason-composition) !important; color: #fff !important; }
   &.small_sample { background: var(--reason-small_sample) !important; color: #fff !important; }
