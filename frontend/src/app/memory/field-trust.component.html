@@ -1,0 +1,16 @@
+<div class="field-trust">
+  <div
+    class="field-row"
+    *ngFor="let f of fields"
+    [matTooltip]="f.evidence"
+    matTooltipPosition="left"
+  >
+    <div class="field-name" [class.strike]="f.verdict === 'quarantined'">
+      {{ f.table_name }}.{{ f.column_name }}
+    </div>
+    <div class="trust-bar-track">
+      <div class="trust-bar-fill" [ngClass]="f.verdict" [style.width.%]="f.trust * 100"></div>
+    </div>
+    <div class="trust-value mono" [ngClass]="f.verdict">{{ f.trust | number: '1.0-2' }}</div>
+  </div>
+</div>

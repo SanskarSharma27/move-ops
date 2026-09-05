@@ -1,0 +1,178 @@
+@use '@angular/material' as mat;
+@include mat.core();
+
+$move-ops-primary: mat.define-palette(mat.$blue-grey-palette, 900, 700, 900);
+$move-ops-accent: mat.define-palette(mat.$green-palette, A700, A400, A700);
+$move-ops-warn: mat.define-palette(mat.$red-palette, 600);
+
+$move-ops-typography: mat.define-typography-config(
+  $font-family: 'Fira Sans, Roboto, sans-serif',
+);
+
+$move-ops-theme: mat.define-dark-theme((
+  color: (
+    primary: $move-ops-primary,
+    accent: $move-ops-accent,
+    warn: $move-ops-warn,
+  ),
+  typography: $move-ops-typography,
+  density: -2,
+));
+
+@include mat.all-component-themes($move-ops-theme);
+
+:root {
+  // Palette: dark ops console tuned for a washed-out projector (kiosk/high-contrast profile).
+  --bg: #020617;
+  --surface: #0e1223;
+  --surface-raised: #151a2e;
+  --border: #334155;
+  --text: #f8fafc;
+  --text-muted: #94a3b8;
+
+  --severity-critical: #ef4444;
+  --severity-high: #f97316;
+  --severity-medium: #f59e0b;
+  --severity-low: #38bdb8;
+
+  --positive: #22c55e;
+  --negative: #ef4444;
+
+  // Reason codes: the three "noise" reasons share a muted family;
+  // known_pattern and target_moved are deliberately distinct — they are not dismissals.
+  --reason-composition: #64748b;
+  --reason-small_sample: #52606d;
+  --reason-child_of_parent: #8b5cf6;
+  --reason-known_pattern: #f59e0b;
+  --reason-target_moved: #22c55e;
+
+  --trust-trusted: #22c55e;
+  --trust-degraded: #f59e0b;
+  --trust-quarantined: #ef4444;
+
+  --radius: 8px;
+  --font-mono: 'Fira Code', ui-monospace, monospace;
+  --font-sans: 'Fira Sans', Roboto, sans-serif;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 14px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+// New DOM nodes (a freshly-revealed incident/suppression/playbook row as the
+// replay clock steps forward) get this for free — CSS animations run on
+// insertion, so no JS/Angular-animation trigger is needed.
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card-in {
+  animation: card-in 300ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-in {
+    animation: none;
+  }
+}
+
+.strike {
+  text-decoration: line-through;
+  text-decoration-color: var(--severity-critical);
+  text-decoration-thickness: 2px;
+  opacity: 0.7;
+}
+
+.scroll-x {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.scroll-y {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+a {
+  color: inherit;
+}
+
+.severity-chip {
+  &.critical { background: var(--severity-critical) !important; color: #000 !important; }
+  &.high { background: var(--severity-high) !important; color: #000 !important; }
+  &.medium { background: var(--severity-medium) !important; color: #000 !important; }
+  &.low { background: var(--severity-low) !important; color: #000 !important; }
+}
+
+// Panel headers here routinely wrap to two lines (long signal/suppression
+// headlines); Material's fixed 48px header height overlaps title and
+// description when that happens, so let the header grow instead.
+.mat-expansion-panel-header {
+  height: auto !important;
+  min-height: 48px;
+  padding: 10px 16px !important;
+
+  .mat-content {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 2px;
+  }
+
+  .mat-expansion-panel-header-title,
+  .mat-expansion-panel-header-description {
+    margin-right: 0;
+  }
+
+  .mat-expansion-panel-header-description {
+    color: var(--text-muted);
+  }
+}
+
+.reason-chip {
+  &.composition { background: var(--reason-composition) !important; color: #fff !important; }
+  &.small_sample { background: var(--reason-small_sample) !important; color: #fff !important; }
+  &.child_of_parent { background: var(--reason-child_of_parent) !important; color: #fff !important; }
+  &.known_pattern { background: var(--reason-known_pattern) !important; color: #000 !important; }
+  &.target_moved { background: var(--reason-target_moved) !important; color: #000 !important; }
+}

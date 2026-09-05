@@ -1,0 +1,87 @@
+:host {
+  display: block;
+  height: 100vh;
+}
+
+.shell {
+  display: grid;
+  grid-template-columns: 260px 1fr 320px;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    'top top top'
+    'left center right'
+    'foot foot foot';
+  height: 100vh;
+  gap: 10px;
+  padding: 10px;
+}
+
+.topbar {
+  grid-area: top;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 2px 4px;
+}
+
+.brand {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.brand-sub {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.rail-left {
+  grid-area: left;
+  padding: 12px;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.rail-right {
+  grid-area: right;
+  padding: 12px;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.center {
+  grid-area: center;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+
+  ::ng-deep .mat-mdc-tab-body-wrapper {
+    flex: 1;
+    min-height: 0;
+  }
+
+  ::ng-deep .mat-mdc-tab-group {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.tab-body {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-top: 10px;
+  min-height: 0;
+}
+
+.detail-scroll {
+  flex: 1;
+  min-height: 0;
+}
+
+.footer {
+  grid-area: foot;
+  height: 64px;
+}
