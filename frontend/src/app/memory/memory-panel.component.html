@@ -1,0 +1,56 @@
+<div class="panel scroll-y">
+  <section>
+    <h3>Field trust</h3>
+    <app-field-trust></app-field-trust>
+  </section>
+
+  <section>
+    <h3>Cases</h3>
+    <div class="empty" *ngIf="!cases.length">No open cases yet.</div>
+    <mat-accordion multi="false">
+      <mat-expansion-panel *ngFor="let c of cases; trackBy: trackByCaseId">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <span class="case-entity">{{ c.entity_id }}</span>
+          </mat-panel-title>
+          <mat-panel-description>
+            <span class="status-chip" [ngClass]="c.status">{{ c.status }}</span>
+            <span class="occurrences mono">×{{ c.occurrences }}</span>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <p class="diagnosis">{{ c.diagnosis }}</p>
+
+        <div class="prediction-record" *ngIf="c.prediction_record as pr">
+          <span class="mono">{{ pr.confirmed }} confirmed</span>
+          <span class="mono">·</span>
+          <span class="mono">{{ pr.refuted }} refuted</span>
+          <span class="mono">·</span>
+          <span class="mono">{{ pr.pending }} pending</span>
+        </div>
+
+        <ul class="predictions">
+          <li *ngFor="let p of c.predictions">
+            <mat-icon
+              class="outcome-icon"
+              [ngClass]="p.outcome ?? 'pending'"
+              inline="true"
+            >{{ p.outcome === 'confirmed' ? 'check' : p.outcome === 'refuted' ? 'close' : 'schedule' }}</mat-icon>
+            <span class="prediction-text">{{ p.statement }}</span>
+          </li>
+        </ul>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </section>
+
+  <section>
+    <h3>Playbook</h3>
+    <div class="empty" *ngIf="!playbook.length">Empty so far — entries appear as cases confirm predictions.</div>
+    <div class="playbook-entry card-in" *ngFor="let p of playbook">
+      <div class="playbook-action">{{ p.action }}</div>
+      <div class="playbook-meta mono">
+        confidence {{ p.confidence | number: '1.0-2' }} · cases {{ p.evidence.case_ids.join(', ') }}
+      </div>
+    </div>
+  </section>
+</div>

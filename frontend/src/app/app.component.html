@@ -1,0 +1,39 @@
+<div class="shell">
+  <header class="topbar">
+    <span class="brand">MoveOps</span>
+    <span class="brand-sub mono">fleet reasoning agent — July 2026 replay</span>
+  </header>
+
+  <aside class="rail-left card">
+    <app-replay-clock></app-replay-clock>
+  </aside>
+
+  <main class="center">
+    <mat-tab-group animationDuration="0ms">
+      <mat-tab label="Incidents">
+        <div class="tab-body">
+          <app-incident-list
+            [selectedId]="selectedIncidentId"
+            (select)="selectIncident($event)"
+          ></app-incident-list>
+          <div class="detail-scroll scroll-y">
+            <app-incident-detail [incidentId]="selectedIncidentId"></app-incident-detail>
+          </div>
+        </div>
+      </mat-tab>
+      <mat-tab label="Suppression Ledger">
+        <div class="tab-body">
+          <app-suppression-ledger></app-suppression-ledger>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </main>
+
+  <aside class="rail-right card">
+    <app-memory-panel></app-memory-panel>
+  </aside>
+
+  <footer class="footer card">
+    <app-report-card></app-report-card>
+  </footer>
+</div>

@@ -1,0 +1,85 @@
+<ng-container *ngIf="incident as inc; else emptyState">
+  <div class="detail">
+    <header>
+      <span class="severity-chip" [ngClass]="inc.severity">{{ inc.severity }}</span>
+      <span class="status mono">{{ inc.status }}</span>
+      <span class="detector mono">{{ inc.detector }}</span>
+    </header>
+
+    <h2 class="headline">{{ inc.headline }}</h2>
+    <p class="narrative">{{ inc.narrative }}</p>
+
+    <div class="context-grid">
+      <div class="context-block" *ngFor="let key of contextOrder">
+        <div class="context-title">{{ key }}</div>
+        <div class="context-statement">{{ inc.context[key].statement }}</div>
+
+        <ng-container [ngSwitch]="key">
+          <div class="context-values mono" *ngSwitchCase="'trend'">
+            <span *ngFor="let e of trendEntries(inc)">{{ e[0] }}: {{ e[1] }}{{ inc.context.trend.unit }}</span>
+          </div>
+          <div class="context-values mono" *ngSwitchCase="'peer'">
+            median {{ inc.context.peer.peer_median }}{{ inc.context.peer.unit }} · pctile {{ inc.context.peer.pctile }}
+          </div>
+          <div class="context-values mono" *ngSwitchCase="'threshold'">
+            actual {{ inc.context.threshold.actual }}{{ inc.context.threshold.unit }} vs target {{ inc.context.threshold.target }}{{ inc.context.threshold.unit }}
+          </div>
+          <div class="context-values mono" *ngSwitchCase="'impact'">
+            {{ inc.context.impact.value | number }} {{ inc.context.impact.unit }}
+            <span *ngIf="inc.context.impact.secondary">
+              · {{ inc.context.impact.secondary.value }} {{ inc.context.impact.secondary.unit }}
+            </span>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+
+    <section class="hypotheses" *ngIf="inc.hypotheses?.length">
+      <h3>Hypotheses considered</h3>
+      <div class="hypothesis" *ngFor="let h of inc.hypotheses" [class.refuted]="h.verdict === 'refuted'">
+        <div class="h-row">
+          <span class="h-rank mono">#{{ h.rank }}</span>
+          <span class="h-statement" [class.strike]="h.verdict === 'refuted'">{{ h.statement }}</span>
+          <span class="h-verdict mono" [ngClass]="h.verdict">{{ h.verdict }}</span>
+        </div>
+        <div class="h-reasoning">{{ h.reasoning }}</div>
+      </div>
+    </section>
+
+    <section class="recommendation" *ngIf="inc.recommendation as rec">
+      <h3>Recommendation</h3>
+      <div class="rec-action">{{ rec.action }}</div>
+      <div class="rec-meta mono">
+        <span>owner: {{ rec.owner }}</span>
+        <span>due: {{ rec.due }}</span>
+        <span class="confidence" [ngClass]="rec.confidence">{{ rec.confidence }}</span>
+      </div>
+      <div class="rec-effect">{{ rec.expected_effect }}</div>
+      <div class="rec-assumption">
+        <mat-icon inline="true">info</mat-icon>
+        {{ rec.assumption }}
+      </div>
+    </section>
+
+    <section class="signals" *ngIf="inc.signals?.length">
+      <h3>Signals absorbed</h3>
+      <mat-accordion multi="false">
+        <mat-expansion-panel *ngFor="let s of inc.signals">
+          <mat-expansion-panel-header>
+            <mat-panel-title>{{ s.headline }}</mat-panel-title>
+            <mat-panel-description class="mono">{{ s.entity_id }}</mat-panel-description>
+          </mat-expansion-panel-header>
+          <ul class="evidence-list mono">
+            <li *ngFor="let e of s.evidence">{{ e.claim }}: {{ e.value }}{{ e.unit }} <span class="source">({{ e.source }})</span></li>
+          </ul>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </section>
+
+    <app-whatif [incident]="inc"></app-whatif>
+  </div>
+</ng-container>
+
+<ng-template #emptyState>
+  <div class="empty">{{ loading ? 'Loading incident…' : 'Select an incident to see its reasoning.' }}</div>
+</ng-template>

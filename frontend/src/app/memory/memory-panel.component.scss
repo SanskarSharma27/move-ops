@@ -1,0 +1,107 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  height: 100%;
+  padding-right: 2px;
+}
+
+h3 {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 8px;
+}
+
+.case-entity {
+  font-size: 12px;
+}
+
+.status-chip {
+  font-size: 9px;
+  text-transform: uppercase;
+  padding: 1px 6px;
+  border-radius: 4px;
+  margin-right: 8px;
+
+  &.open { background: rgba(148, 163, 184, 0.2); color: var(--text-muted); }
+  &.recurring { background: rgba(245, 158, 11, 0.2); color: var(--severity-medium); }
+  &.structural { background: rgba(239, 68, 68, 0.2); color: var(--severity-critical); }
+  &.resolved { background: rgba(34, 197, 94, 0.2); color: var(--positive); }
+}
+
+.occurrences {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.diagnosis {
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 0 0 8px;
+}
+
+.prediction-record {
+  display: flex;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.predictions {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.predictions li {
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+  font-size: 11px;
+}
+
+.outcome-icon {
+  font-size: 14px;
+  height: 14px;
+  width: 14px;
+  flex: none;
+  margin-top: 1px;
+
+  &.confirmed { color: var(--positive); }
+  &.refuted { color: var(--severity-critical); }
+  &.pending { color: var(--text-muted); }
+}
+
+.prediction-text {
+  color: var(--text-muted);
+}
+
+.playbook-entry {
+  padding: 8px 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--positive);
+  border-radius: var(--radius);
+  margin-bottom: 8px;
+}
+
+.playbook-action {
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+.playbook-meta {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.empty {
+  color: var(--text-muted);
+  font-size: 12px;
+}

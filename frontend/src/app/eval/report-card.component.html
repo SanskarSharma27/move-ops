@@ -1,0 +1,47 @@
+<div class="strip" *ngIf="card as c">
+  <button class="metric" [class.open]="expanded === 'faithfulness'" (click)="toggle('faithfulness')">
+    <div class="metric-label">Faithfulness</div>
+    <div class="metric-value mono" [class.pass]="c.faithfulness.passed">
+      {{ unsourcedCount(c) }} unsourced numbers / {{ c.faithfulness.statements_checked | number }} statements
+    </div>
+  </button>
+
+  <button class="metric" [class.open]="expanded === 'detection'" (click)="toggle('detection')">
+    <div class="metric-label">Detection</div>
+    <div class="metric-value mono" [class.pass]="c.detection.passed">
+      P {{ c.detection.precision }} · R {{ c.detection.recall }} · {{ c.detection.median_lead_days }}d median lead
+    </div>
+  </button>
+
+  <button class="metric" [class.open]="expanded === 'trace'" (click)="toggle('trace')">
+    <div class="metric-label">Trace</div>
+    <div class="metric-value mono" [class.pass]="c.trace_schema.passed">
+      {{ c.trace_schema.complete }}/{{ c.trace_schema.incidents }} complete
+    </div>
+  </button>
+
+  <button class="metric" [class.open]="expanded === 'behaviour'" (click)="toggle('behaviour')">
+    <div class="metric-label">Behaviour</div>
+    <div class="metric-value mono" [class.pass]="c.behaviour.passed">
+      {{ c.behaviour.probes_passed }}/{{ c.behaviour.probes_total }} probes passed
+    </div>
+  </button>
+
+  <div class="detail" *ngIf="expanded">
+    <ng-container [ngSwitch]="expanded">
+      <span *ngSwitchCase="'faithfulness'">
+        {{ c.faithfulness.numbers_extracted }} numbers extracted across {{ c.faithfulness.statements_checked }} statements; {{ c.faithfulness.unsourced_number_rate * 100 }}% unsourced.
+      </span>
+      <span *ngSwitchCase="'detection'">
+        Precision {{ c.detection.precision }}, recall {{ c.detection.recall }}, median lead time {{ c.detection.median_lead_days }} days ahead of a month-end report.
+      </span>
+      <span *ngSwitchCase="'trace'">
+        {{ c.trace_schema.complete }} of {{ c.trace_schema.incidents }} incidents carry a complete evidence trace (hypotheses, four context blocks, sourced recommendation).
+      </span>
+      <span *ngSwitchCase="'behaviour'">
+        {{ c.behaviour.probes_passed }} of {{ c.behaviour.probes_total }} behaviour probes passed.
+        <span *ngIf="c.behaviour.failed.length"> Failed: {{ c.behaviour.failed.join(', ') }}</span>
+      </span>
+    </ng-container>
+  </div>
+</div>

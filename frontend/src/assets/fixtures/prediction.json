@@ -1,0 +1,31 @@
+[
+  {"prediction_id":"prd0000000000001","case_id":"CASE-0001","made_on":"2026-07-08","verify_on":"2026-07-15",
+   "statement":"Cedar Ridge will fall below 80% on-time again within seven days, on a Tuesday or Wednesday.",
+   "metric":"ota15","entity_type":"office","entity_id":"vanta-Aus / Cedar Ridge Office",
+   "predicate":"lt","threshold":80.0,"threshold_hi":null,
+   "outcome":"confirmed","observed":77.8,"verified_on":"2026-07-15"},
+
+  {"prediction_id":"prd0000000000002","case_id":"CASE-0001","made_on":"2026-07-15","verify_on":"2026-07-22",
+   "statement":"Cedar Ridge will fall below 80% on-time again within seven days.",
+   "metric":"ota15","entity_type":"office","entity_id":"vanta-Aus / Cedar Ridge Office",
+   "predicate":"lt","threshold":80.0,"threshold_hi":null,
+   "outcome":"confirmed","observed":59.3,"verified_on":"2026-07-21"},
+
+  {"prediction_id":"prd0000000000003","case_id":"CASE-0001","made_on":"2026-07-21","verify_on":"2026-07-28",
+   "statement":"Without a schedule change, Cedar Ridge will breach 80% again on the next Tuesday or Wednesday.",
+   "metric":"ota15","entity_type":"office","entity_id":"vanta-Aus / Cedar Ridge Office",
+   "predicate":"lt","threshold":80.0,"threshold_hi":null,
+   "outcome":"confirmed","observed":67.0,"verified_on":"2026-07-28"},
+
+  {"prediction_id":"prd0000000000004","case_id":"CASE-0002","made_on":"2026-07-15","verify_on":"2026-07-31",
+   "statement":"catalyst-Sac mean acknowledgement time will remain above 500 minutes through month end.",
+   "metric":"ack_minutes","entity_type":"business_unit","entity_id":"catalyst-Sac",
+   "predicate":"gt","threshold":500.0,"threshold_hi":null,
+   "outcome":"confirmed","observed":993.3,"verified_on":"2026-07-31"},
+
+  {"prediction_id":"prd0000000000005","case_id":"CASE-0001","made_on":"2026-07-29","verify_on":"2026-08-05",
+   "statement":"Cedar Ridge will breach 80% on the first Tuesday of August unless planned durations are extended.",
+   "metric":"ota15","entity_type":"office","entity_id":"vanta-Aus / Cedar Ridge Office",
+   "predicate":"lt","threshold":80.0,"threshold_hi":null,
+   "outcome":null,"observed":null,"verified_on":null}
+]
